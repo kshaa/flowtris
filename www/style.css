@@ -1,0 +1,36 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+html, body { height: 100%; }
+
+body {
+    background: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#tetris td {
+    width: 18px;
+    max-width: 18px;
+    height: 18px;
+    max-height: 18px;
+    text-align: center;
+}
+
+#tetris td.empty {
+    background: #334;
+    color: grey;
+}
+
+#tetris td.filled { color: white; }
+#tetris td.i { background: darkcyan; }
+#tetris td.o { background: yellow; }
+#tetris td.t { background: rebeccapurple; }
+#tetris td.s { background: forestgreen; }
+#tetris td.z { background: red; }
+#tetris td.j { background: blue; }
+#tetris td.l { background: orangered; }

@@ -1,0 +1,16 @@
+{
+  "name": "flowtris",
+  "version": "0.1.0",
+  "description": "A handsome HTML5, WebRTC tetris remake",
+  "main": "www/index.html",
+  "author": "Krišjānis Veinbahs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kshaa/flowtris"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "peerjs": "^0.3.14",
+    "requirejs": "^2.3.3"
+  }
+}

@@ -9,8 +9,10 @@ written with nice controls and without flash as a dependency.
     (Equal chances in multiplayer)
 * [Super rotation system](https://tetris.wiki/SRS)
     (Rotation around walls, T-Spins, magical tetris saves)
-* Modifiable lock delay. Default: 2.5s // Not yet implemented
-    (Tetromino locks down when it has touched ground after a delay)
+
+# Bugs
+* If a line above the 0th is cleared, the field shrinks by one line
+    and doesn't regenerate an empty line at the top :D
 
 # Compiling
 To compile, run this:

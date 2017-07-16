@@ -1,9 +1,4 @@
-define([
-    "require",
-],
-function(
-    require
-) {
+define(function() {
     return function Hook() {
         this.before = function(callback) {
             this._befores.push(callback)

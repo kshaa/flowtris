@@ -1,5 +1,6 @@
-define(["./data/tetrominos"],
-function(tetrominos) {
+define(function(require) {
+    var tetrominos = require('./tetrominos')
+
     return function Randomize(seed) {
         if (typeof seed === 'undefined') {
             this._seed = Math.round(Math.random() * Math.pow(10, 17))

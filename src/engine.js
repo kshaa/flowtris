@@ -1,19 +1,17 @@
-define([
-    "require", "./lib/randomize/randomize", "./lib/mechanics/mechanics",
-    "./data/game", "./lib/hook/hook"
-],
-function(
-    require, Randomize, Mechanics,
-    Gamestate, Hook
-) {
+define(function(require) {
+    var state = require('state'),
+        hook = require('hook/hook'),
+        randomize = require('randomize/randomize'),
+        mechanics = require('mechanics/mechanics');
+
     return function TetrisEngine(seed) {
 
         //
 
-        this.hook       = new Hook()
-        this._game      = new Gamestate()
-        this._randomize = new Randomize()
-        this._mechanics = new Mechanics(this._game, this._randomize)
+        this.hook       = new hook()
+        this._game      = new state()
+        this._randomize = new randomize()
+        this._mechanics = new mechanics(this._game, this._randomize)
 
         // Info
 
@@ -23,8 +21,8 @@ function(
         // Loop
         
         this._main = function() {
-            let fps = 60
-            let delta = this._logTime()                
+            var fps = 60,
+                delta = this._logTime();
 
             this.hook._runBefores(this, delta)
             if (this._game.settings.playing &&

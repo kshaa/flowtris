@@ -2,7 +2,7 @@
   "name": "tetris-engine",
   "version": "0.1.0",
   "description": "Tetris engine",
-  "main": "www/index.html",
+  "main": "dist/engine.js",
   "author": "Krišjānis Veinbahs",
   "repository": {
     "type": "git",

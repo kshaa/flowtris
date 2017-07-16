@@ -1,5 +1,5 @@
 define(function() {
-    return function Gamestate() {
+    return function state() {
         this.settings = {
             gravity: 1000, // Tetris G's - miliseconds between drops
             height: 24, // Upper two lines are the spawn
@@ -29,10 +29,9 @@ define(function() {
         }
         
         // Create empty field
-        let field = new Array(this.settings.height)
+        this.frame.field = new Array(this.settings.height)
         for (i = 0; i < this.settings.height; i++) {
             field[i] = new Array(this.settings.width).fill(0)
         }
-        this.frame.field = field
     }
 })

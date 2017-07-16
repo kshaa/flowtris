@@ -9,3 +9,11 @@
   - Remove keyboard, peerjs
   - Set requirejs as devDependency
   - Lock package versions
+- Modify build file
+  - Update to new structure
+  - Remove unnecessary info
+- Restructure engine dependencies
+  - De-nest some structures
+  - Use CommonJS dependency declarations
+  - Left unchanged mechanics (additional work necessary for restruction)
+- Fix build errors

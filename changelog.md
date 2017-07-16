@@ -16,4 +16,5 @@
   - De-nest some structures
   - Use CommonJS dependency declarations
   - Left unchanged mechanics (additional work necessary for restruction)
+- Add build config for minified script
 - Fix build errors

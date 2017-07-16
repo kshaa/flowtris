@@ -1,7 +1,7 @@
 {
-  "name": "flowtris",
+  "name": "tetris-engine",
   "version": "0.1.0",
-  "description": "A handsome HTML5, WebRTC tetris remake",
+  "description": "Tetris engine",
   "main": "www/index.html",
   "author": "Krišjānis Veinbahs",
   "repository": {
@@ -9,9 +9,7 @@
     "url": "https://github.com/kshaa/flowtris"
   },
   "license": "MIT",
-  "dependencies": {
-    "keyboardjs": "^2.3.3",
-    "peerjs": "^0.3.14",
+  "devDependencies": {
     "requirejs": "^2.3.3"
   }
 }

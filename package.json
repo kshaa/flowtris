@@ -12,6 +12,7 @@
   "dependencies": {
     "keyboardjs": "^2.3.3",
     "peerjs": "^0.3.14",
-    "requirejs": "^2.3.3"
+    "requirejs": "^2.3.3",
+    "tetris-engine": "git+https://github.com/kshaa/tetris-engine.git"
   }
 }

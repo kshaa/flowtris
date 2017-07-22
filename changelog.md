@@ -9,3 +9,10 @@
   - Create engine interface
 - Create control system
 - Create rendering system 
+
+### [0.2.0]
+- Split tetris engine into another repo
+- Create node server
+  - Using Express.js
+  - Serves Flowtris app
+  - Hosts PeerJS server

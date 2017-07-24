@@ -1,0 +1,41 @@
+* {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: #fff;
+}
+
+body {
+    background: #1a1a1a;
+    color: #ddd;
+}
+
+html,
+body,
+#main,
+.flowtris {
+    height: 100%;
+}
+
+.flowtris {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas:
+        "page sidebar";
+}
+
+
+.sidebar {
+    background: #333;
+    grid-area: sidebar;
+}
+
+.page {
+    background: #1a1a1a;
+    grid-area: page;
+}
+

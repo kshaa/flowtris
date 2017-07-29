@@ -10,6 +10,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "requirejs": "^2.3.3"
+    "babel-loader": "^7.1.1",
+    "webpack": "^3.4.1"
   }
 }

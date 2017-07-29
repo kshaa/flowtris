@@ -1,7 +1,12 @@
 # CHANGELOG
 
-### [0.0.0]
-- Clone of flowtris
+### [0.2.0]
+- New build process
+  - Babel compiler
+  - Webpack bundler
+- Small fixes
+  - Fix build info
+  - Remove wrong/unnecessary example page
 
 ### [0.1.0]
 - Create .gitignore
@@ -18,3 +23,7 @@
   - Left unchanged mechanics (additional work necessary for restruction)
 - Add build config for minified script
 - Fix build errors
+
+### [0.0.0]
+- Clone of flowtris
+

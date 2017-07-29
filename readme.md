@@ -16,6 +16,7 @@ To compile, run this:
 ```
     # Get dependencies
     npm install
+
     # Compile
-    node node_modules/requirejs/bin/r.js -o tools/build.js
+    npm run build
 ```

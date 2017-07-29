@@ -1,9 +1,10 @@
 # CHANGELOG
 
-### [0.2.0]
+### [0.1.1]
 - New build process
-  - Babel compiler
   - Webpack bundler
+  - Babel compiler
+  - Fixed minified build
 - Small fixes
   - Fix build info
   - Remove wrong/unnecessary example page

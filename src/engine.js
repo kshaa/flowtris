@@ -1,8 +1,8 @@
 define(function(require) {
-    var state = require('state'),
-        hook = require('hook/hook'),
-        randomize = require('randomize/randomize'),
-        mechanics = require('mechanics/mechanics');
+    var state = require('./state'),
+        hook = require('./hook/hook'),
+        randomize = require('./randomize/randomize'),
+        mechanics = require('./mechanics/mechanics');
 
     return function TetrisEngine(seed) {
 

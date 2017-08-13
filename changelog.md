@@ -13,6 +13,6 @@
 ### [0.2.0]
 - Split tetris engine into another repo
 - Create node server
-  - Using Express.js
+  - Using Koa.js
   - Serves Flowtris app
   - Hosts PeerJS server

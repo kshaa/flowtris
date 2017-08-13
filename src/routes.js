@@ -1,8 +1,8 @@
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
-import Layout from './components/Layout';
-import EntryPage from './components/EntryPage';
-import NoPage from './components/NoPage';
+import Layout from './components/Layout'
+import EntryPage from './components/EntryPage'
+import NoPage from './components/NoPage'
 
 const routes = (
     <Route path="/" component={Layout}>
@@ -11,4 +11,4 @@ const routes = (
     </Route>
 );
 
-export default routes;
+export default routes

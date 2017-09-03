@@ -12,7 +12,8 @@
 
 ### [0.2.0]
 - Split tetris engine into another repo
-- Create node server
-  - Using Koa.js
-  - Serves Flowtris app
-  - Hosts PeerJS server
+- Create Koa.js node server
+- Create React.js UI
+- Add SimpleWebRTC for communications
+- Create SimpleWebRTC UI wrapper w/ React.js
+- Add Redux for global data storage

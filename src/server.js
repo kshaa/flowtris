@@ -1,19 +1,18 @@
 import Koa from 'koa'
 import serve from 'koa-static'
 import send from 'koa-send'
-import path from 'path'
 
-const app = new Koa()
 const port = process.env.PORT || 3000
+const app = new Koa()
 
-// Serve static files
+    // Static files
 app.use(serve('public'))
 
-// Serve pages
+// Pages
 app.use(async(ctx) => {
     await send(ctx, 'public/index.html')
 })
 
-// Serve
-app.listen(port)
-console.log("Started server on port " + port)
+// Init server
+const server = app.listen(port)
+

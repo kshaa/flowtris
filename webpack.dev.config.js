@@ -17,7 +17,7 @@ module.exports = [
             test: path.join(__dirname, 'src'),
             loader: 'babel-loader',
             query: {
-                presets: ['react', 'es2015']
+                presets: ['react', 'stage-2']
             }
         }]
     },
@@ -35,18 +35,18 @@ module.exports = [
 },
 {
     entry: [
-        path.join(__dirname, 'src', 'client.js')
+        path.join(__dirname, 'src', 'app.js')
     ],
     output: {
         path: path.join(__dirname, 'dist', 'public', 'js'),
-        filename: 'client.js'
+        filename: 'app.js'
     },
     module: {
         loaders: [{
             test: path.join(__dirname, 'src'),
             loader: 'babel-loader',
             query: {
-                presets: ['react', 'es2015']
+                presets: ['react', 'stage-2']
             }
         }]
     },

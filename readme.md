@@ -5,6 +5,8 @@ written with nice controls and without flash as a dependency.
 # Tech stack  
 * Koa
 * React
+* Redux
+* SimpleWebRTC
 * Webpack
 * [Custom tetris engine](https://github.com/kshaa/tetris-engine)
 

@@ -32,7 +32,7 @@ export const wrtcConnectSuccess = (wrtc) => {
 }
 
 // Thunk action creator
-export const wrtcInit = (nick, room) => (dispatch, getState) => {
+export const initWrtc = (nick, room) => (dispatch, getState) => {
     return new Promise((resolve, reject) => {
         const state = getState()
         const wrtc = state.wrtc.wrtcInstance

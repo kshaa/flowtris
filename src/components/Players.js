@@ -1,15 +1,11 @@
 import React from 'react'
 import Player from './Player'
 import { connect } from 'react-redux'
-import { playersInit } from '../actions/players'
+import { initPlayers } from '../actions/players'
 
 class Players extends React.Component {
     componentDidMount() {
-        this.props.playersInit()
-    }
-
-    handleSelect(peer) {
-        this.props.onSelect(peer);
+        this.props.initPlayers()
     }
 
     render() {
@@ -25,9 +21,11 @@ class Players extends React.Component {
                 </div>
                 <div className="list">
                     <ul>
-                        {this.props.players.map((player) =>
-                            <Player key={ player.id } player={ player }/>
-                        )}
+                        {this.props.players.map((player) => {
+                            return (
+                                <Player key={ player.id } onClick={ this.props.onSelect } player={ player } />
+                            )
+                        })}
                     </ul>
                 </div>
             </div>
@@ -41,7 +39,7 @@ export default connect(
         ...state.wrtc
     }),
     dispatch => ({
-        playersInit() { dispatch(playersInit) }
+        initPlayers() { dispatch(initPlayers) }
     })
 )(Players)
 

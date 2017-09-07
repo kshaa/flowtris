@@ -1,10 +1,10 @@
-import { wrtcInit } from './wrtc'
+import { initWrtc } from './wrtc'
 
 /**
  * Action types
  */
 export const PLAYER_HAS_CONNECTED = 'PLAYER_HAS_CONNECTED'
-export const PLAYER_HAS_LOADED = 'PLAYER_HAS_LOADED'
+export const PLAYER_HAS_CHANGED_STATE = 'PLAYER_HAS_CHANGED_STATE'
 export const PLAYER_HAS_LEFT = 'PLAYER_HAS_LEFT'
 
 /**
@@ -13,13 +13,15 @@ export const PLAYER_HAS_LEFT = 'PLAYER_HAS_LEFT'
 export const playerHasConnected = (peer) => {
     return {
         type: PLAYER_HAS_CONNECTED,
+        loaded: peerLoaded(peer),
         peer
     }
 }
 
-export const playerHasLoaded = (peer) => {
+export const playerHasChangedState = (peer) => {
     return {
-        type: PLAYER_HAS_LOADED,
+        type: PLAYER_HAS_CHANGED_STATE,
+        loaded: peerLoaded(peer),
         peer
     }
 }
@@ -32,15 +34,12 @@ export const playerHasLeft = (peer) => {
 }
 
 // Thunk action creator
-export const playersInit = (dispatch, getState) => {
+export const initPlayers = (dispatch, getState) => {
     return new Promise((resolve, reject) => {
-        const state = getState()
-        const players = state.players.playersList
-        
-        dispatch(wrtcInit())
+        dispatch(initWrtc())
             .then((wrtc) => {
-                wrtc.getPeers().map(handlePeer.bind(null, dispatch))
-                wrtc.on('createdPeer', handlePeer.bind(null, dispatch))
+                wrtc.getPeers().map(checkStatus.bind(null, getState, dispatch))
+                wrtc.on('createdPeer', checkStatus.bind(null, getState, dispatch))
                 resolve(wrtc)
             })
             .catch((response) => {
@@ -49,21 +48,55 @@ export const playersInit = (dispatch, getState) => {
     })
 }
 
-const handlePeer = (dispatch, peer) => {
-    dispatch(playerHasConnected(peer))
-    handlePeerState(dispatch, peer) // In case peer has already loaded
+const checkStatus = (getState, dispatch, peer) => {
+    broadcastStatus(getState, dispatch, peer)
     peer.pc.on('iceConnectionStateChange', (e) => {
-        handlePeerState(dispatch, peer)
+        broadcastStatus(getState, dispatch, peer)
     })
 }
 
-const handlePeerState = (dispatch, peer) => {
+const broadcastStatus = (getState, dispatch, peer) => {
+    if (peerLeft(peer)) {
+        dispatch(playerHasLeft(peer))
+    } else {
+        if (peerIsAssigned(getState, peer)) {
+            dispatch(playerHasChangedState(peer))
+        } else {
+            dispatch(playerHasConnected(peer))
+        }
+    }
+}
+
+const peerIsAssigned = (getState, peer) => {
+    const state = getState()
+    const players = state.players
+
+    return undefined !== players.find((player) => {
+        return player.id === peer.id
+    })
+}
+
+const peerLeft = (peer) => {
     switch (peer.pc.iceConnectionState) {
-        case 'connected':
-            dispatch(playerHasLoaded(peer))
-            break
         case 'closed':
-            dispatch(playerHasLeft(peer))
+        case 'failed':
+            return true
+            break
+        default:
+            return false
             break
     }
 }
+
+const peerLoaded = (peer) => {
+    switch (peer.pc.iceConnectionState) {
+        case 'connected':
+        case 'completed':
+            return true
+            break
+        default:
+            return false
+            break
+    }
+}
+

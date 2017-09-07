@@ -1,19 +1,47 @@
 import {
     PLAYER_HAS_CONNECTED,
-    PLAYER_HAS_LOADED,
+    PLAYER_HAS_CHANGED_STATE,
     PLAYER_HAS_LEFT
 } from '../actions/players'
 
 export const players = (state = [], action) => {
     switch (action.type) {
         case PLAYER_HAS_CONNECTED:
-            return addConnectedPlayer(state, action)
-        case PLAYER_HAS_LOADED:
-            return addLoadedPlayer(state, action)
+            return addPlayer(state, action)
+        case PLAYER_HAS_CHANGED_STATE:
+            return updatePlayer(state, action)
         case PLAYER_HAS_LEFT:
             return removePlayer(state, action)
         default:
             return state
+    }
+}
+
+const addPlayer = (state, action) => {
+    return [
+        ...state,
+        constructPlayer(action.peer, action.loaded)
+    ]
+}
+
+const updatePlayer = (state, action) => {
+    const playerIndex = state.findIndex(player => player.id === action.peer.id)
+
+    return [
+        ...state.slice(0, playerIndex),
+        constructPlayer(action.peer, action.loaded),
+        ...state.slice(playerIndex + 1)
+    ]
+}
+
+const removePlayer = (state, action) => {
+    const playerIndex = state.findIndex(player => player.id === action.peer.id)
+
+    if (playerIndex !== undefined) {
+        return [
+            ...state.slice(0, playerIndex),
+            ...state.slice(playerIndex + 1)
+        ]
     }
 }
 
@@ -24,40 +52,3 @@ const constructPlayer = (peer, loaded) => ({
     peer
 })
 
-const addConnectedPlayer = (state, action) => {
-    return addPlayer(state, action, false)
-}
-
-const addLoadedPlayer = (state, action) => {
-    return addPlayer(state, action, true)
-}
-
-const addPlayer = (state, action, loaded) => {
-    const peer = action.peer
-    const playerIndex = state.findIndex(player => player.id === peer.id)
-
-    if (playerIndex !== undefined) {
-        return [
-            ...state.slice(0, playerIndex),
-            constructPlayer(peer, loaded),
-            ...state.slice(playerIndex + 1)
-        ]
-    } else {
-        return [
-            ...state,
-            constructPlayer(peer, loaded)
-        ]
-    }
-}
-
-const removePlayer = (state, action) => {
-    const peer = action.peer
-    const playerIndex = state.findIndex(player => player.id === peer.id)
-
-    if (playerIndex !== undefined) {
-        return [
-            ...state.slice(0, playerIndex),
-            ...state.slice(playerIndex + 1)
-        ]
-    }
-}

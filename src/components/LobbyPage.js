@@ -9,17 +9,11 @@ import { sendInvite } from '../actions/room'
 const room = 'lobby'
 
 class Lobby extends React.Component {
-    constructor() {
-        super()
-        this.state = { selectedPlayer: {} }
-    }
-
     componentDidMount() {
         this.props.initWrtc(room)
     }
 
     selectPlayer = (selectedPlayer) => {
-        console.log('selected', selectedPlayer)
         this.props.sendInvite(selectedPlayer)
     }
 

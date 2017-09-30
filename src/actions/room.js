@@ -20,7 +20,7 @@ export const LOBBY_LOST_INVITE = 'LOBBY_LOST_INVITE'
 export const GAME_INVITE = 'GAME_INVITE'
 export const GAME_INVITE_ABORT = 'GAME_INVITE_ABORT'
 export const GAME_ACCEPT = 'GAME_ACCEPT'
-export const GAME_DENY = 'GAME_DENY'
+export const GAME_DECLINE = 'GAME_DECLINE'
 
 /**
  * Initiator const
@@ -64,15 +64,16 @@ export const lostInvite = () => {
 
 export const acceptedInvite = (player) => {
     return {
-        type: LOBBY_ACCEPT,
+        type: LOBBY_ACCEPTED_INVITE,
+        initiator: REMOTE_INITIATOR,
         player
     }
 }
 
-export const deniedInvite = (player) => {
+export const declinedInvite = () => {
     return {
-        type: LOBBY_DENY,
-        player
+        type: LOBBY_DECLINED_INVITE,
+        initiator: NO_INITIATOR
     }
 }
 
@@ -102,30 +103,70 @@ export const listenInvite = (dispatch, getState) => {
     }))
 }
 
-export const abortInvite = (host, recipient) => (dispatch, getState) => {
-    const hostId = getState().wrtc.wrtcInstance.id
+export const abortInvite = (dispatch, getState) => {
+    const recipient = getState().room.roomBuddy
+    console.log(recipient) 
     dispatch(messagePlayers(GAME_INVITE_ABORT, {
-        recipientId: recipient.id,
-        hostId 
+        recipientId: recipient.id
     }))
-    dispatch(abortedInvite(recipient))
+    dispatch(abortedInvite())
 }
 
 export const listenAbortInvite = (dispatch, getState) => {
-    dispatch(listenPlayers(GAME_INVITE, (peer, info) => {
-        const payload = info.payload,
-              hostId = payload.hostId,
-              players = getState().players,
-              host = players.find((player) => player.id == hostId)
+    console.log('listening')
+    dispatch(listenPlayers(GAME_INVITE_ABORT, (peer, { payload, type }) => {
+        console.log('shit, he aborted')
+        const state = getState(),
+              recipientId = payload.recipientId,
+              selfId = state.wrtc.wrtcInstance.connection.connection.id, 
+              host = state.players.find((player) => player.id == peer.id).peer
 
-        dispatch(lostInvite(host))
+        if (recipientId == selfId) {
+            dispatch(lostInvite())
+        }
     }))
 }
 
-export const acceptInvite = (player) => (dispatch, getState) => {
-    dispatch(acceptedInvite(player))
+export const acceptInvite = (dispatch, getState) => {
+    const recipient = getState().room.roomBuddy
+    dispatch(messagePlayers(GAME_ACCEPT, {
+        recipientId: recipient.id,
+    }))
+    dispatch(acceptedInvite(recipient))
 }
 
-export const denyInvite = (player) => (dispatch, getState) => {
-    dispatch(deniedInvite(player))
+export const listenAcceptInvite = (dispatch, getState) => {
+    dispatch(listenPlayers(GAME_ACCEPT, (peer, { payload, type }) => {
+        const state = getState(),
+              recipientId = payload.recipientId,
+              selfId = state.wrtc.wrtcInstance.connection.connection.id, 
+              host = state.players.find((player) => player.id == peer.id).peer
+
+        if (recipientId == selfId) {
+             console.log('parties agreed')
+            //dispatch(gameStart(host))
+        }
+    }))
+}
+
+export const declineInvite = (dispatch, getState) => {
+    const recipient = getState().room.roomBuddy
+        console.log(recipient)
+    dispatch(messagePlayers(GAME_DECLINE, {
+        recipientId: recipient.id,
+    }))
+    dispatch(declinedInvite())
+}
+
+export const listenDeclineInvite = (dispatch, getState) => {
+    dispatch(listenPlayers(GAME_DECLINE, (peer, { payload, type }) => {
+        const state = getState(),
+              recipientId = payload.recipientId,
+              selfId = state.wrtc.wrtcInstance.connection.connection.id, 
+              host = state.players.find((player) => player.id == peer.id).peer
+
+        if (recipientId == selfId) {
+            dispatch(lostInvite())
+        }
+    }))
 }

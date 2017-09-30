@@ -1,4 +1,5 @@
 import { listenPlayers, messagePlayers } from './players'
+import { browserHistory } from 'react-router'
 
 /**
  * Action types
@@ -80,6 +81,10 @@ export const declinedInvite = () => {
 /**
  * Thunk action creators
  */
+export const startGame = (room) => (dispatch, getState) => {
+    browserHistory.push(room)
+}
+
 export const sendInvite = (recipient) => (dispatch, getState) => {
     dispatch(messagePlayers(GAME_INVITE, {
         recipientId: recipient.id,
@@ -128,11 +133,13 @@ export const listenAbortInvite = (dispatch, getState) => {
 }
 
 export const acceptInvite = (dispatch, getState) => {
-    const recipient = getState().room.roomBuddy
+    const recipient = getState().room.roomBuddy,
+          host = getState().wrtc.wrtcInstance.connection.connection
     dispatch(messagePlayers(GAME_ACCEPT, {
         recipientId: recipient.id,
     }))
     dispatch(acceptedInvite(recipient))
+    dispatch(startGame(host.id))
 }
 
 export const listenAcceptInvite = (dispatch, getState) => {
@@ -144,7 +151,7 @@ export const listenAcceptInvite = (dispatch, getState) => {
 
         if (recipientId == selfId) {
              console.log('parties agreed')
-            //dispatch(gameStart(host))
+             dispatch(startGame(host.id))
         }
     }))
 }

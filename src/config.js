@@ -1,5 +1,4 @@
 export default {
-    room: 'Flowtris',
     nick: 'Guest',
-    timeout: 5000
+    timeout: 15000
 }

@@ -39,7 +39,7 @@ export default connect(
         ...state.wrtc
     }),
     dispatch => ({
-        initPlayers() { dispatch(initPlayers) }
+        initPlayers() { dispatch(initPlayers) } 
     })
 )(Players)
 

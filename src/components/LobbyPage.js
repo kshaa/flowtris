@@ -1,23 +1,42 @@
 import React from 'react'
 import Players from './Players'
+import InviteOverlay from './InviteOverlay'
+import classNames from 'classnames'
+import { connect } from 'react-redux'
+import { initWrtc } from '../actions/wrtc'
+import { sendInvite } from '../actions/room'
 
-export default class Lobby extends React.Component {
+const room = 'lobby'
+
+class Lobby extends React.Component {
     constructor() {
         super()
         this.state = { selectedPlayer: {} }
     }
 
+    componentDidMount() {
+        this.props.initWrtc(room)
+    }
+
     selectPlayer = (selectedPlayer) => {
-        this.setState({ selectedPlayer })
+        console.log('selected', selectedPlayer)
+        this.props.sendInvite(selectedPlayer)
     }
 
     render() {
         return (
             <div className="lobby">
-                <p>Selected player: { this.state.selectedPlayer.nick }</p>
-                <Players onSelect={ this.selectPlayer }
-                    selectedPlayer={ this.state.selectedPlayer }/>
+                <InviteOverlay/>
+                <Players onSelect={ this.selectPlayer }/>
             </div>
         );
     }
 }
+
+export default connect(
+    state => ({}),
+    dispatch => ({
+        initWrtc(room) { dispatch(initWrtc(room)) },
+        sendInvite(player) { dispatch(sendInvite(player)) }
+    })
+)(Lobby)

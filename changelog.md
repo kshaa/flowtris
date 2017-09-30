@@ -17,3 +17,4 @@
 - Add SimpleWebRTC for communications
 - Create SimpleWebRTC UI wrapper w/ React.js
 - Add Redux for global data storage
+- Add invite overlays and functional communication

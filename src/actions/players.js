@@ -1,4 +1,4 @@
-import { initWrtc } from './wrtc'
+import { subscribeWrtc } from './wrtc'
 
 /**
  * Action types
@@ -6,6 +6,8 @@ import { initWrtc } from './wrtc'
 export const PLAYER_HAS_CONNECTED = 'PLAYER_HAS_CONNECTED'
 export const PLAYER_HAS_CHANGED_STATE = 'PLAYER_HAS_CHANGED_STATE'
 export const PLAYER_HAS_LEFT = 'PLAYER_HAS_LEFT'
+export const PLAYER_SENT_MESSAGE = 'PLAYER_SENT_MESSAGE'
+export const PLAYER_LISTENING_MESSAGE = 'PLAYER_LISTENING_MESSAGE'
 
 /**
  * Action creators
@@ -33,14 +35,16 @@ export const playerHasLeft = (peer) => {
     }
 }
 
-// Thunk action creator
+/**
+ * Thunk action creators
+ */
 export const initPlayers = (dispatch, getState) => {
     return new Promise((resolve, reject) => {
-        dispatch(initWrtc())
+        dispatch(subscribeWrtc())
             .then((wrtc) => {
                 wrtc.getPeers().map(checkStatus.bind(null, getState, dispatch))
                 wrtc.on('createdPeer', checkStatus.bind(null, getState, dispatch))
-                resolve(wrtc)
+                resolve('Loaded players.')
             })
             .catch((response) => {
                 reject('Failed to load players: ' + response)
@@ -48,14 +52,36 @@ export const initPlayers = (dispatch, getState) => {
     })
 }
 
+export const messagePlayers = (type, payload) => (dispatch, getState) => {
+    dispatch(subscribeWrtc())
+        .then((wrtc) => {
+            wrtc.sendDirectlyToAll('-', type, payload)
+        })
+}
+
+export const listenPlayers = (type, callback) => (dispatch, getState) => {
+    dispatch(subscribeWrtc())
+        .then((wrtc) => {
+            wrtc.on('channelMessage', (peer, channelLabel, info) => { 
+                console.log(info, peer)
+                if (info.type === type) {
+                    callback(peer, info)
+                }
+            })
+        })
+}
+
+/**
+ *  Helpers
+ */
 const checkStatus = (getState, dispatch, peer) => {
-    broadcastStatus(getState, dispatch, peer)
+    dispatchStatus(getState, dispatch, peer)
     peer.pc.on('iceConnectionStateChange', (e) => {
-        broadcastStatus(getState, dispatch, peer)
+        dispatchStatus(getState, dispatch, peer)
     })
 }
 
-const broadcastStatus = (getState, dispatch, peer) => {
+const dispatchStatus = (getState, dispatch, peer) => {
     if (peerLeft(peer)) {
         dispatch(playerHasLeft(peer))
     } else {

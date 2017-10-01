@@ -8,6 +8,7 @@ export const PLAYER_HAS_CHANGED_STATE = 'PLAYER_HAS_CHANGED_STATE'
 export const PLAYER_HAS_LEFT = 'PLAYER_HAS_LEFT'
 export const PLAYER_SENT_MESSAGE = 'PLAYER_SENT_MESSAGE'
 export const PLAYER_LISTENING_MESSAGE = 'PLAYER_LISTENING_MESSAGE'
+export const PLAYERS_FLUSH = 'PLAYERS_FLUSH'
 
 /**
  * Action creators
@@ -42,8 +43,13 @@ export const initPlayers = (dispatch, getState) => {
     return new Promise((resolve, reject) => {
         dispatch(subscribeWrtc())
             .then((wrtc) => {
+                console.log(wrtc.getPeers())
+                console.log('tada')
                 wrtc.getPeers().map(checkStatus.bind(null, getState, dispatch))
+                console.log('tada2')
                 wrtc.on('createdPeer', checkStatus.bind(null, getState, dispatch))
+                console.log('tada3')
+                console.log('tada4')
                 resolve('Loaded players.')
             })
             .catch((response) => {
@@ -74,6 +80,27 @@ export const listenPlayers = (type, callback) => (dispatch, getState) => {
 /**
  *  Helpers
  */
+const playersFlush = (getState, dispatch) => {
+    const state = getState(),
+          peers = state.wrtc.wrtcInstance.getPeers()
+
+    console.log('flushing player list')
+    if (state.wrtc.wrtcHasFinished) {
+        // Instance is up, let's clean up boys    
+        state.players.map((player) => {
+            console.log(player.peer.pc.iceConnectionState)
+            if (peers.find(peer => player.id == peer.id) !== undefined) {
+                dispatch(playerHasLeft(player.peer))
+            }
+        })
+    } else {
+        // Instance is down, remove players
+        state.players.map((player) => {
+            dispatch(playerHasLeft(player.peer))
+        })
+    }
+}
+
 const checkStatus = (getState, dispatch, peer) => {
     dispatchStatus(getState, dispatch, peer)
     peer.pc.on('iceConnectionStateChange', (e) => {
@@ -118,6 +145,7 @@ const peerLoaded = (peer) => {
     switch (peer.pc.iceConnectionState) {
         case 'connected':
         case 'completed':
+        case 'checking':
             return true
             break
         default:

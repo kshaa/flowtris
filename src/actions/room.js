@@ -1,5 +1,6 @@
 import { listenPlayers, messagePlayers } from './players'
 import { browserHistory } from 'react-router'
+import { room as gameRoomLabel } from '../components/RoomPage'
 
 /**
  * Action types
@@ -82,7 +83,7 @@ export const declinedInvite = () => {
  * Thunk action creators
  */
 export const startGame = (room) => (dispatch, getState) => {
-    browserHistory.push(room)
+    browserHistory.push(gameRoomLabel + '/' + room)
 }
 
 export const sendInvite = (recipient) => (dispatch, getState) => {
@@ -139,7 +140,11 @@ export const acceptInvite = (dispatch, getState) => {
         recipientId: recipient.id,
     }))
     dispatch(acceptedInvite(recipient))
-    dispatch(startGame(host.id))
+    // Send acceptance, wait and go to room
+    // this seems like a hacky fix
+    setTimeout(() => {
+        dispatch(startGame(host.id))
+    }, 100)
 }
 
 export const listenAcceptInvite = (dispatch, getState) => {

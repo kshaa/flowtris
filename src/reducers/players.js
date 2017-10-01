@@ -1,17 +1,22 @@
 import {
     PLAYER_HAS_CONNECTED,
     PLAYER_HAS_CHANGED_STATE,
-    PLAYER_HAS_LEFT
+    PLAYER_HAS_LEFT,
+    PLAYERS_FLUSH
 } from '../actions/players'
 
 export const players = (state = [], action) => {
     switch (action.type) {
         case PLAYER_HAS_CONNECTED:
+            console.log(action.peer.nick)
             return addPlayer(state, action)
         case PLAYER_HAS_CHANGED_STATE:
+            console.log(action.peer.nick)
             return updatePlayer(state, action)
         case PLAYER_HAS_LEFT:
             return removePlayer(state, action)
+        case PLAYERS_FLUSH:
+            return []
         default:
             return state
     }

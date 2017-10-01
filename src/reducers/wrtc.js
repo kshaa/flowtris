@@ -2,8 +2,22 @@ import {
     WRTC_HAS_ERRORED,
     WRTC_IS_LOADING,
     WRTC_CONNECT_FINISHED,
-    WRTC_SUBSCRIBE
+    WRTC_SUBSCRIBE,
+    WRTC_SUBSCRIBE_FLUSH,
+    WRTC_JOIN_ROOM,
+    WRTC_LEAVE_ROOM
 } from '../actions/wrtc'
+
+export function wrtcCurrentRoom(state = '', action) {
+    switch (action.type) {
+        case WRTC_JOIN_ROOM:
+            return action.room
+        case WRTC_LEAVE_ROOM:
+            return ''
+        default:
+            return state
+    }
+}
 
 export function wrtcHasErrored(state = false, action) {
     switch (action.type) {
@@ -52,6 +66,8 @@ export function wrtcSubscribers(state = [], action) {
                     reject: action.reject
                 }
             ]
+        case WRTC_SUBSCRIBE_FLUSH:
+            return []
         default:
             return state  
     }         
@@ -63,6 +79,7 @@ export function wrtc(state = {}, action) {
         wrtcSubscribers: wrtcSubscribers(state.wrtcSubscribers, action),
         wrtcIsLoading: wrtcIsLoading(state.wrtcIsLoading, action),
         wrtcHasErrored: wrtcHasErrored(state.wrtcHasErrored, action),
-        wrtcHasFinished: wrtcHasFinished(state.wrtcHasFinished, action)
+        wrtcHasFinished: wrtcHasFinished(state.wrtcHasFinished, action),
+        wrtcCurrentRoom: wrtcCurrentRoom(state.wrtcCurrentRoom, action)
     }
 }

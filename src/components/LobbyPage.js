@@ -4,7 +4,7 @@ import InviteOverlay from './InviteOverlay'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 import { initWrtc } from '../actions/wrtc'
-import { sendInvite } from '../actions/room'
+import { sendInvite } from '../actions/lobby'
 
 const room = 'lobby'
 

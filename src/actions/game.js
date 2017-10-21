@@ -1,92 +1,58 @@
 import { listenPlayers, messagePlayers } from './players'
 import { browserHistory } from 'react-router'
 import { room as gameRoomLabel } from '../components/RoomPage'
+import {
+    SELF_INITIATOR,
+    REMOTE_INITATOR
+} from './lobby'
 
 /**
  * Action types
  */
 
-// Local'ish
-export const LOBBY_SENT_INVITE = 'LOBBY_SENT_INVITE'
-export const LOBBY_ABORTED_INVITE = 'LOBBY_ABORTED_INVITE'
-export const LOBBY_ACCEPTED_INVITE = 'LOBBY_ACCEPTED_INVITE'
-export const LOBBY_DECLINED_INVITE = 'LOBBY_DECLINED_INVITE'
-
-// Remote'ish
-export const LOBBY_RECEIVED_INVITE = 'LOBBY_RECEIVED_INVITE'
-export const LOBBY_LOST_INVITE = 'LOBBY_LOST_INVITE'
-
-/**
- * Message types
- */
-export const GAME_INVITE = 'GAME_INVITE'
-export const GAME_INVITE_ABORT = 'GAME_INVITE_ABORT'
-export const GAME_ACCEPT = 'GAME_ACCEPT'
-export const GAME_DECLINE = 'GAME_DECLINE'
-
-/**
- * Initiator const
- */
-export const SELF_INITIATOR = 'SELF_INITIATOR'
-export const REMOTE_INITIATOR = 'REMOTE_INITIATOR'
-export const NO_INITIATOR = 'NO_INITIATOR'
+export const GAME_DROPPED_LINE = 'GAME_DROPPED_LINE'
+export const GAME_CHANGED_FIELD = 'GAME_CHANGED_FIELD'
+export const GAME_STARTED = 'GAME_STARTED'
 
 /**
  * Action creators
  */
-export const sentInvite = (player) => {
+export const droppedLine = (lineNumber, initiator, player) => {
     return {
-        type: LOBBY_SENT_INVITE,
-        initiator: SELF_INITIATOR,
+        type: GAME_DROPPED_LINE,
+        lineNumber,
+        initiator,
         player
     }
 }
 
-export const abortedInvite = () => {
+export const changedField = (field, initiator, player) => {
     return {
-        type: LOBBY_ABORTED_INVITE,
-        initiator: NO_INITIATOR
-    }
-}
-
-export const receivedInvite = (player) => {
-    return {
-        type: LOBBY_RECEIVED_INVITE,
-        initiator: REMOTE_INITIATOR,
+        type: GAME_CHANGED_FIELD, 
+        field,
+        initiator,
         player
     }
 }
 
-export const lostInvite = () => {
-    return {
-        type: LOBBY_LOST_INVITE,
-        initiator: NO_INITIATOR
-    }
-}
-
-export const acceptedInvite = (player) => {
-    return {
-        type: LOBBY_ACCEPTED_INVITE,
-        initiator: REMOTE_INITIATOR,
-        player
-    }
-}
-
-export const declinedInvite = () => {
-    return {
-        type: LOBBY_DECLINED_INVITE,
-        initiator: NO_INITIATOR
-    }
+export const gameStarted = {
+    type: GAME_STARTED
 }
 
 /**
  * Thunk action creators
  */
-export const startGame = (room) => (dispatch, getState) => {
-    browserHistory.push(gameRoomLabel + '/' + room)
+export const initGame = () => (dispatch, getState) => {
+    const state = getState(),
+          roomInitiator = state.room.roomInitiator
+
+    if (roomInitiator === SELF_INITIATOR) {
+        dispatch(messagePlayers(GAME_STARTED))
+        dispatch(gameStarted)
+    }
 }
 
-export const sendInvite = (recipient) => (dispatch, getState) => {
+export const sendChangedField = (field) => (dispatch, getState) => {
     dispatch(messagePlayers(GAME_INVITE, {
         recipientId: recipient.id,
     }))

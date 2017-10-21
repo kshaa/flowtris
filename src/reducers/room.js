@@ -6,7 +6,7 @@ import {
     LOBBY_RECEIVED_INVITE,
     LOBBY_LOST_INVITE,
     NO_INITIATOR
-} from '../actions/room'
+} from '../actions/lobby'
 
 
 export function roomInitiator(state = NO_INITIATOR, action) {

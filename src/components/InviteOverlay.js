@@ -12,7 +12,7 @@ import {
     NO_INITIATOR,
     SELF_INITIATOR,
     REMOTE_INITIATOR
-} from '../actions/room'
+} from '../actions/lobby'
 
 class InviteOverlay extends React.Component {
     componentDidMount() {

@@ -58,7 +58,7 @@ export const initPlayers = (dispatch, getState) => {
     })
 }
 
-export const messagePlayers = (type, payload) => (dispatch, getState) => {
+export const messagePlayers = (type, payload = {}) => (dispatch, getState) => {
     dispatch(subscribeWrtc())
         .then((wrtc) => {
             wrtc.sendDirectlyToAll('-', type, payload)

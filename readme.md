@@ -1,6 +1,5 @@
-# HTML5 / WebRTC Tetris
-Motivation for this project was a lack of good multiplayer tetris
-written with nice controls and without flash as a dependency.
+# Flowtris
+Multiplayer WebRTC Tetris with React UI
 
 # Tech stack  
 * Koa

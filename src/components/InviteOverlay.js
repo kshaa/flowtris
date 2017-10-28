@@ -32,7 +32,7 @@ class InviteOverlay extends React.Component {
 
         return (
             <div className={ overlayClass }>
-                {this.props.initiator === SELF_INITIATOR && 
+                {this.props.initiator === SELF_INITIATOR &&
                     <div className="wrapper">
                         <p>Inviting { this.props.buddy.nick }</p>
                         <a className="button cancel" onClick={ this.props.abortInvite }>Actually, let's not</a>
@@ -50,10 +50,35 @@ class InviteOverlay extends React.Component {
     }
 }
 
+/**
+ * This should all be done in actions
+ * it's an anti-pattern, but I want to see a working
+ * application first, so whatever
+ * TODO - Rework when implementing multiplayer
+ */
+
+const populateBuddies = (buddies, players) => {
+    const buddiesClone = {} // Mustn't modify state
+    Object.keys(buddies).map((id) => {
+        const player = players.filter((player) => player.id == id)[0]
+        buddiesClone[id] = buddies[id]
+        buddiesClone[id]['nick'] = player.nick
+    })
+
+    console.log(buddies, buddiesClone, players)
+
+    return buddiesClone
+}
+
+const getFirstBuddy = (buddies) => {
+    console.log(buddies)
+    return Object.values(buddies)[0]
+}
+
 export default connect(
     state => ({
         initiator: state.room.roomInitiator,
-        buddy: state.room.roomBuddy
+        buddy: getFirstBuddy(populateBuddies(state.room.roomGames.remote, state.players))
     }),
     dispatch => ({
         listenInvite() { dispatch(listenInvite) },

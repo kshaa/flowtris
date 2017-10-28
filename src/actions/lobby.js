@@ -64,11 +64,10 @@ export const lostInvite = () => {
     }
 }
 
-export const acceptedInvite = (player) => {
+export const acceptedInvite = () => {
     return {
         type: LOBBY_ACCEPTED_INVITE,
-        initiator: REMOTE_INITIATOR,
-        player
+        initiator: REMOTE_INITIATOR
     }
 }
 
@@ -83,7 +82,7 @@ export const declinedInvite = () => {
  * Thunk action creators
  */
 export const redirectGame = (room) => (dispatch, getState) => {
-    browserHistory.push(gameRoomLabel + '/' + room)
+    browserHistory.push('/' + gameRoomLabel + '/' + room)
 }
 
 export const sendInvite = (recipient) => (dispatch, getState) => {
@@ -110,10 +109,9 @@ export const listenInvite = (dispatch, getState) => {
 }
 
 export const abortInvite = (dispatch, getState) => {
-    const recipient = getState().room.roomBuddy
-    console.log(recipient) 
+    const recipientId = Object.keys(getState().room.roomGames.remote)[0]
     dispatch(messagePlayers(GAME_INVITE_ABORT, {
-        recipientId: recipient.id
+        recipientId
     }))
     dispatch(abortedInvite())
 }
@@ -134,12 +132,12 @@ export const listenAbortInvite = (dispatch, getState) => {
 }
 
 export const acceptInvite = (dispatch, getState) => {
-    const recipient = getState().room.roomBuddy,
+    const recipientId = Object.keys(getState().room.roomGames.remote)[0],
           host = getState().wrtc.wrtcInstance.connection.connection
+    dispatch(acceptedInvite())
     dispatch(messagePlayers(GAME_ACCEPT, {
-        recipientId: recipient.id,
+        recipientId
     }))
-    dispatch(acceptedInvite(recipient))
     // Send acceptance, wait and go to room
     // this seems like a hacky fix
     setTimeout(() => {
@@ -162,10 +160,9 @@ export const listenAcceptInvite = (dispatch, getState) => {
 }
 
 export const declineInvite = (dispatch, getState) => {
-    const recipient = getState().room.roomBuddy
-        console.log(recipient)
+    const recipientId = Object.keys(getState().room.roomGames.remote)[0]
     dispatch(messagePlayers(GAME_DECLINE, {
-        recipientId: recipient.id,
+        recipientId
     }))
     dispatch(declinedInvite())
 }

@@ -1,150 +1,129 @@
 import { listenPlayers, messagePlayers } from './players'
-import { browserHistory } from 'react-router'
-import { room as gameRoomLabel } from '../components/RoomPage'
 import {
     SELF_INITIATOR,
-    REMOTE_INITATOR
+    REMOTE_INITIATOR
 } from './lobby'
 
 /**
  * Action types
  */
-
-export const GAME_DROPPED_LINE = 'GAME_DROPPED_LINE'
-export const GAME_CHANGED_FIELD = 'GAME_CHANGED_FIELD'
-export const GAME_STARTED = 'GAME_STARTED'
+export const GAME_STARTED       = 'GAME_STARTED'
+export const GAME_STOPPED       = 'GAME_STOPPED'
+export const GAME_PIECE_UPDATED = 'GAME_PIECE_UPDATED'
+export const GAME_FIELD_UPDATED = 'GAME_FIELD_UPDATED' 
+export const GAME_LINE_ADDED    = 'GAME_LINE_ADDED'    // No. - above which grid line will be added
+export const GAME_LINE_DROPPED  = 'GAME_LINE_DROPPED'  // No. - which field line will be deleted
 
 /**
- * Action creators
+ * Actions
  */
-export const droppedLine = (lineNumber, initiator, player) => {
+export const gameStarted = (id) => {
     return {
-        type: GAME_DROPPED_LINE,
-        lineNumber,
+        type: GAME_STARTED,
+        id
+    }
+}
+
+export const gameStopped = (id) => {
+    return {
+        type: GAME_STOPPED,
+        id
+    }
+}
+
+/**
+ * Add/Drop line,
+ * Update whole field,
+ * Update falling piece
+ */
+export const gameDataChanged = (
+    type,
+    data,
+    player,
+    initiator = player ? REMOTE_INITIATOR : SELF_INITIATOR
+) => {
+    return {
+        type, 
+        data,
         initiator,
         player
     }
 }
 
-export const changedField = (field, initiator, player) => {
-    return {
-        type: GAME_CHANGED_FIELD, 
-        field,
-        initiator,
-        player
-    }
-}
-
-export const gameStarted = {
-    type: GAME_STARTED
-}
-
 /**
- * Thunk action creators
+ * Thunk actions
  */
-export const initGame = () => (dispatch, getState) => {
+const startGames = (dispatch, getState) => {
+    /**
+     * I don't want to subscribe to wrtc and check players there,
+     * because that would mean duplicating 'players' code, which is wrong,
+     * and I shouldn't listen to actions, because that's an anti-pattern.
+     * Maybe I should create a subscription system for players, but that's
+     * the same thing, so I'll just hackily add a timer, and call it a day :D
+     * @type {number}
+     */
+    const checkerId = setTimeout(() => {
+        const state = getState(),
+              players = state.players,
+              games = state.room.roomGames,
+              remoteGames = games.remote,
+              selfGame = games.self
+
+        if (players.length == Object.keys(remoteGames).length) {
+            Object.keys(remoteGames).map((id) => {
+                dispatch(gameStarted(id))
+
+                /**
+                 * Initiate tetris engine and subscribe to it
+                 * and give it access to keyboard or pass clicks
+                 * manually here
+                 */
+            })
+            console.log('started engine, puuuis')
+        }
+    })
+}
+
+export const startRoom = (dispatch, getState) => {
     const state = getState(),
           roomInitiator = state.room.roomInitiator
 
     if (roomInitiator === SELF_INITIATOR) {
         dispatch(messagePlayers(GAME_STARTED))
-        dispatch(gameStarted)
+        dispatch(startGames)
+    } else {
+        dispatch(listenStartGames)
     }
 }
 
-export const sendChangedField = (field) => (dispatch, getState) => {
-    dispatch(messagePlayers(GAME_INVITE, {
-        recipientId: recipient.id,
+export const changeGameData = (type, data) => (dispatch, getState) => {
+    dispatch(gameDataChanged(
+        type,
+        data
+    ))
+    dispatch(messagePlayers(type, {
+        [type]: data
     }))
-    dispatch(sentInvite(recipient))
+}
+export const listenStartGames = (dispatch, getState) => {
+    console.log('listening game start')
+    dispatch(listenPlayers(GAME_STARTED, (peer, { payload, type }) => {
+        // I could write a check here to see if game host initiated start
+        dispatch(startGames)
+    }))
 }
 
-export const listenInvite = (dispatch, getState) => {
-    console.log('listening')
-    dispatch(listenPlayers(GAME_INVITE, (peer, { payload, type }) => {
+export const listenChangeGameData = (type) => (dispatch, getState) => {
+    console.log('listening game changes')
+    dispatch(listenPlayers(type, (peer, { payload, type }) => {
         const state = getState(),
-              recipientId = payload.recipientId,
-              selfId = state.wrtc.wrtcInstance.connection.connection.id, 
-              host = state.players.find((player) => player.id == peer.id).peer
+              player = state.players.find((player) => player.id == peer.id).peer
 
-              console.log('maybe got invite', recipientId, selfId, host)
-        if (recipientId == selfId) {
-              console.log('totes got invite', recipientId, selfId, host)
-            dispatch(receivedInvite(host))
-        }
-    }))
-}
-
-export const abortInvite = (dispatch, getState) => {
-    const recipient = getState().room.roomBuddy
-    console.log(recipient) 
-    dispatch(messagePlayers(GAME_INVITE_ABORT, {
-        recipientId: recipient.id
-    }))
-    dispatch(abortedInvite())
-}
-
-export const listenAbortInvite = (dispatch, getState) => {
-    console.log('listening')
-    dispatch(listenPlayers(GAME_INVITE_ABORT, (peer, { payload, type }) => {
-        console.log('shit, he aborted')
-        const state = getState(),
-              recipientId = payload.recipientId,
-              selfId = state.wrtc.wrtcInstance.connection.connection.id, 
-              host = state.players.find((player) => player.id == peer.id).peer
-
-        if (recipientId == selfId) {
-            dispatch(lostInvite())
-        }
-    }))
-}
-
-export const acceptInvite = (dispatch, getState) => {
-    const recipient = getState().room.roomBuddy,
-          host = getState().wrtc.wrtcInstance.connection.connection
-    dispatch(messagePlayers(GAME_ACCEPT, {
-        recipientId: recipient.id,
-    }))
-    dispatch(acceptedInvite(recipient))
-    // Send acceptance, wait and go to room
-    // this seems like a hacky fix
-    setTimeout(() => {
-        dispatch(startGame(host.id))
-    }, 100)
-}
-
-export const listenAcceptInvite = (dispatch, getState) => {
-    dispatch(listenPlayers(GAME_ACCEPT, (peer, { payload, type }) => {
-        const state = getState(),
-              recipientId = payload.recipientId,
-              selfId = state.wrtc.wrtcInstance.connection.connection.id, 
-              host = state.players.find((player) => player.id == peer.id).peer
-
-        if (recipientId == selfId) {
-             console.log('parties agreed')
-             dispatch(startGame(host.id))
-        }
-    }))
-}
-
-export const declineInvite = (dispatch, getState) => {
-    const recipient = getState().room.roomBuddy
-        console.log(recipient)
-    dispatch(messagePlayers(GAME_DECLINE, {
-        recipientId: recipient.id,
-    }))
-    dispatch(declinedInvite())
-}
-
-export const listenDeclineInvite = (dispatch, getState) => {
-    dispatch(listenPlayers(GAME_DECLINE, (peer, { payload, type }) => {
-        const state = getState(),
-              recipientId = payload.recipientId,
-              selfId = state.wrtc.wrtcInstance.connection.connection.id, 
-              host = state.players.find((player) => player.id == peer.id).peer
-
-        if (recipientId == selfId) {
-            dispatch(lostInvite())
-        }
+        console.log('got call, starting engine, puiiis')
+        dispatch(gameDataChanged(
+            type,
+            payload.type,
+            player
+        ))
     }))
 }

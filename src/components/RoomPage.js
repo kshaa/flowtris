@@ -3,7 +3,8 @@ import TetrisField from './TetrisField'
 import { connect } from 'react-redux'
 import { initWrtc } from '../actions/wrtc'
 import { initPlayers } from '../actions/players'
-import { startGame } from '../actions/game'
+import { startRoom } from '../actions/game'
+import { SELF_INITIATOR } from '../actions/lobby'
 
 export const room = 'room'
 
@@ -18,21 +19,25 @@ class Room extends React.Component {
         console.log('switching room')
         this.props.initWrtc(room + this.roomId)
         this.props.initPlayers()
-        //this.props.initGame()
+        const self = this
+        setTimeout(
+                function() {
+                
+        self.props.startRoom()
+                },
+                2000)
     }
 
     render() {
         return (
             <div className="room">
                 <header>Game room</header>
-                <TetrisField main={ true } config={ this.props.config }/>
-                {/**
-                 * Map isn't necessary, but might be useful
-                 * in future for multiplayer (more than 2)
-                 */}
-                {this.props.players.map((player) => {
+                <TetrisField remote={ false } config={ this.props.config } game={ this.props.games.self }/>
+                {Object.keys(this.props.games.remote).map((id) => {
+                    console.log(id, this.props.games.remote[id], this.props.players.filter((player) => player.id == id)[0])
                     return (
-                        <TetrisField main={ false } key={player.id} player={player}/>
+                        <TetrisField remote={ true } key={ id } game={ this.props.games.remote[id] }
+                            player={ this.props.players.filter((player) => player.id == id)[0] } />
                     )
                 })}
             </div>
@@ -43,11 +48,12 @@ class Room extends React.Component {
 export default connect(
     state => ({
         config: state.config,
-        players: state.players
+        players: state.players,
+        games: state.room.roomGames
     }),
     dispatch => ({
         initWrtc(room) { return dispatch(initWrtc(room)) },
         initPlayers() { return dispatch(initPlayers) },
-        initGame() { return dispatch(initGame) }
+        startRoom() { return dispatch(startRoom) }
     })    
 )(Room)

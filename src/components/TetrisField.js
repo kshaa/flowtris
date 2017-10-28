@@ -7,23 +7,38 @@ export default class TetrisField extends React.Component {
     }
 
     render() {
-        const fieldClass = classNames({
-            field: true,
-            remote: !this.props.main,
-            self: this.props.main
-        })
+        const loaded = !this.props.remote || (this.props.player && this.props.player.loaded),
+              started = this.props.game.started,
+              remote = this.props.remote,
+              fieldClass = classNames({
+                  field: true,
+                  remote: !this.props.remote,
+                  local: this.props.remote,
+              })
 
         return (
             <div tabIndex='1' className={ fieldClass }>
-                {this.props.main &&
-                    <p>{ this.props.config.nick }</p>
-                }
-                {!this.props.main && !this.props.player.loaded &&
-                    <p>...</p>
-                }
-                {!this.props.main && this.props.player.loaded &&
-                    <p>{ this.props.player.nick }</p>
-                }
+                <div className="nickname">
+                    {!loaded &&
+                        <p>...</p>
+                    }
+                    {loaded && remote &&
+                        <p>{ this.props.player.nick }</p>
+                    }
+                    {loaded && !remote &&
+                        <p>{ this.props.config.nick }</p>
+                    }
+                </div>
+                <div className="status">
+                    {!loaded &&
+                        <p>{ "Waiting for player to join" }</p>
+                    }
+                    {loaded &&
+                        <p>{ "Ready!" }</p>
+                    }
+                </div>
+                <div className="field">
+                </div>
             </div>
         )
     }

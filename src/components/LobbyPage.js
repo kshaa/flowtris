@@ -1,7 +1,6 @@
 import React from 'react'
 import Players from './Players'
 import InviteOverlay from './InviteOverlay'
-import classNames from 'classnames'
 import { connect } from 'react-redux'
 import { initWrtc } from '../actions/wrtc'
 import { sendInvite } from '../actions/lobby'

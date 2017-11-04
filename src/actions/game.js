@@ -3,6 +3,7 @@ import {
     SELF_INITIATOR,
     REMOTE_INITIATOR
 } from './lobby'
+import TetrisEngine from 'tetris-engine/src/engine.es6'
 
 /**
  * Action types
@@ -17,10 +18,11 @@ export const GAME_LINE_DROPPED  = 'GAME_LINE_DROPPED'  // No. - which field line
 /**
  * Actions
  */
-export const gameStarted = (id) => {
+export const gameStarted = (engine, playerId) => {
     return {
         type: GAME_STARTED,
-        id
+        engine,
+        playerId
     }
 }
 
@@ -39,72 +41,101 @@ export const gameStopped = (id) => {
 export const gameDataChanged = (
     type,
     data,
-    player,
-    initiator = player ? REMOTE_INITIATOR : SELF_INITIATOR
+    playerId,
+    initiator = playerId ? REMOTE_INITIATOR : SELF_INITIATOR
 ) => {
+    console.log('create action')
     return {
         type, 
         data,
-        initiator,
-        player
+        playerId,
+        initiator
     }
 }
 
 /**
  * Thunk actions
  */
-const startGames = (dispatch, getState) => {
+export const changeGameData = (type, data, playerId = undefined) => (dispatch, getState) => {
+    console.log('broadcast data change')
+    dispatch(gameDataChanged(
+        type,
+        data,
+        playerId
+    ))
+    if (!playerId) {
+        dispatch(messagePlayers(type, { data }))
+    }
+}
+
+export const listenChangeGameData = (type) => (dispatch, getState) => {
+    dispatch(listenPlayers(type, (peer, { payload, type }) => {
+        dispatch(changeGameData(
+            type,
+            payload.data,
+            peer.id
+        ))
+    }))
+}
+
+/**
+ * Bind all engine actions to state
+ * and keyboard events to engine
+ */
+const bindEngineToState = (dispatch, getState, engine) => {
+    engine.start()
+    console.log('started local engine')
+
     /**
-     * I don't want to subscribe to wrtc and check players there,
-     * because that would mean duplicating 'players' code, which is wrong,
-     * and I shouldn't listen to actions, because that's an anti-pattern.
-     * Maybe I should create a subscription system for players, but that's
-     * the same thing, so I'll just hackily add a timer, and call it a day :D
-     * @type {number}
+     * Synchronizing engine state with Redux state
+     *
+     * These state change checks should be done in the engine
+     * this is inefficient
      */
-    const checkerId = setTimeout(() => {
+    engine.hook.before((engine) => {
         const state = getState(),
-              players = state.players,
-              games = state.room.roomGames,
-              remoteGames = games.remote,
-              selfGame = games.self
+              game = state.room.roomGames.self, // Old game state
+              field = engine.field()
 
-        if (players.length == Object.keys(remoteGames).length) {
-            Object.keys(remoteGames).map((id) => {
-                dispatch(gameStarted(id))
-
-                /**
-                 * Initiate tetris engine and subscribe to it
-                 * and give it access to keyboard or pass clicks
-                 * manually here
-                 */
-            })
-            console.log('started engine, puuuis')
+        if (field != game.field) {
+            dispatch(changeGameData(GAME_FIELD_UPDATED, field))
         }
     })
+}
+
+const bindRemoteEnginesToState = (dispatch, getState) => {
+    dispatch(listenChangeGameData(GAME_FIELD_UPDATED));
+}
+
+const startGames = (dispatch, getState) => {
+    const state = getState(),
+          games = state.room.roomGames,
+          remoteGames = games.remote
+
+    // Start remotes
+    bindRemoteEnginesToState(dispatch, getState)
+    Object.keys(remoteGames).map((playerId) => {
+        dispatch(gameStarted(playerId))
+    })
+
+    // Bind self
+    const engine = new TetrisEngine()
+    dispatch(gameStarted())
+    bindEngineToState(dispatch, getState, engine)
 }
 
 export const startRoom = (dispatch, getState) => {
     const state = getState(),
           roomInitiator = state.room.roomInitiator
 
+    console.log('starting')
     if (roomInitiator === SELF_INITIATOR) {
-        dispatch(messagePlayers(GAME_STARTED))
-        dispatch(startGames)
+        dispatch(waitForPlayers)
     } else {
         dispatch(listenStartGames)
     }
 }
 
-export const changeGameData = (type, data) => (dispatch, getState) => {
-    dispatch(gameDataChanged(
-        type,
-        data
-    ))
-    dispatch(messagePlayers(type, {
-        [type]: data
-    }))
-}
 export const listenStartGames = (dispatch, getState) => {
     console.log('listening game start')
     dispatch(listenPlayers(GAME_STARTED, (peer, { payload, type }) => {
@@ -113,17 +144,34 @@ export const listenStartGames = (dispatch, getState) => {
     }))
 }
 
-export const listenChangeGameData = (type) => (dispatch, getState) => {
-    console.log('listening game changes')
-    dispatch(listenPlayers(type, (peer, { payload, type }) => {
-        const state = getState(),
-              player = state.players.find((player) => player.id == peer.id).peer
+const waitForPlayers = (dispatch, getState) => {
+    /**
+     * Timeout handler
+     */
+    const timeoutId = setTimeout(() => {
+        clearInterval(checkerId)
+        alert('Wait timed out' + getState().config.timeout)
+    }, getState().config.timeout)
 
-        console.log('got call, starting engine, puiiis')
-        dispatch(gameDataChanged(
-            type,
-            payload.type,
-            player
-        ))
-    }))
+    /**
+     * Player arrival handler
+     */
+    const checkerId = setInterval(() => {
+        const state = getState(),
+            players = state.players,
+            games = state.room.roomGames,
+            remoteGames = games.remote,
+            playersReady = Object.keys(remoteGames).length == players.filter(player => player.loaded).length
+
+            console.log(players, games, remoteGames, playersReady)
+
+        if (playersReady) {
+            console.log('players are ready, starting')
+            dispatch(messagePlayers(GAME_STARTED))
+            dispatch(startGames)
+
+            clearInterval(checkerId);
+            clearTimeout(timeoutId);
+        }
+    }, 100)
 }

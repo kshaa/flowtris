@@ -5,8 +5,8 @@ import { players } from './players'
 import { room } from './room'
 
 export default combineReducers({
-    config,
-    wrtc,
-    players,
-    room
+    config, // Immutable
+    wrtc, // Wrtc instance mutable
+    players, // Peer instances mutable
+    room // Tetris engines mutable
 })

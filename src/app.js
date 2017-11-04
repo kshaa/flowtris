@@ -10,10 +10,12 @@ import thunk from 'redux-thunk'
 import { createLogger } from 'redux-logger'
 import rootReducer from './reducers/root'
 
+const isProduction = NODE_ENV == 'production'
+const composeMiddleware = isProduction ? compose :  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const store = createStore(
     rootReducer,
-    undefined,    
-    compose(
+    undefined,
+    composeMiddleware(
         applyMiddleware(thunk),
         autoRehydrate(),
         applyMiddleware(

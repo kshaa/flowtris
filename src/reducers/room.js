@@ -5,12 +5,13 @@ import {
     LOBBY_DECLINED_INVITE,
     LOBBY_RECEIVED_INVITE,
     LOBBY_LOST_INVITE,
-    NO_INITIATOR
+    NO_INITIATOR,
+    SELF_INITIATOR,
+    REMOTE_INITIATOR
 } from '../actions/lobby'
 
 import {
-    GAME_STARTED,
-    GAME_STOPPED
+    GAME_FIELD_UPDATED
 } from '../actions/game'
 
 const createPlayer = (
@@ -41,6 +42,7 @@ export function roomInitiator(state = NO_INITIATOR, action) {
 }
 
 export function selfGame(state = {}, action) {
+    console.log('action being reduced', action.type)
     switch (action.type) {
         case LOBBY_SENT_INVITE:
         case LOBBY_RECEIVED_INVITE:
@@ -49,6 +51,10 @@ export function selfGame(state = {}, action) {
         case LOBBY_LOST_INVITE:
         case LOBBY_DECLINED_INVITE:
             return {}
+        case GAME_FIELD_UPDATED:
+            if (action.initiator == SELF_INITIATOR) {
+                return createPlayer(state, undefined, undefined, action.data)
+            }
         default:
             return state
     }
@@ -66,6 +72,15 @@ export function remoteGames(state = {}, action) {
         case LOBBY_LOST_INVITE:
         case LOBBY_DECLINED_INVITE:
             return {}
+        case GAME_FIELD_UPDATED:
+            if (action.initiator == REMOTE_INITIATOR) {
+                return Object.assign(
+                    state,
+                    {
+                        [action.playerId]: createPlayer(state, undefined, undefined, action.data)
+                    }
+                )
+            }
         default:
             return state
     }

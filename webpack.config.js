@@ -1,10 +1,11 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin'),
+    ExtractTextPlugin = require('extract-text-webpack-plugin'),
     webpack = require('webpack'),
     path = require('path'),
     isProduction = process.argv.indexOf('-p') !== -1
 
 module.exports = [
-    {
+    { // Server
         target: 'node',
         entry: [
             path.join(__dirname, 'src', 'server.js'),
@@ -25,7 +26,7 @@ module.exports = [
         plugins: [
             new CopyWebpackPlugin([
                 {
-                    from: 'src/static',
+                    from: 'src/index.html',
                     to: 'public'
                 }
             ]),
@@ -34,26 +35,43 @@ module.exports = [
             })
         ]
     },
-    {
+    { // Application
         entry: [
-            path.join(__dirname, 'src', 'app.js')
+            path.join(__dirname, 'src', 'app.js'),
+            path.join(__dirname, 'src', 'styles', 'main.scss')
         ],
         output: {
             path: path.join(__dirname, 'dist', 'public', 'js'),
             filename: 'app.js'
         },
         module: {
-            loaders: [{
-                test: path.join(__dirname, 'src'),
-                loader: 'babel-loader',
-                query: {
-                    presets: ['react', 'stage-2']
+            rules: [
+                {
+                    test: /\.js$/,
+                    exclude: /(node_modules|bower_components)/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['react', 'stage-2']
+                        }
+                    }
+                },
+                {
+                    test: /\.(sass|scss)$/,
+                    loader: ExtractTextPlugin.extract([
+                        'css-loader',
+                        'sass-loader'
+                    ])
                 }
-            }]
+            ]
         },
         plugins: [
             new webpack.DefinePlugin({
                 'NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development')
+            }),
+            new ExtractTextPlugin({
+                filename: '..//styles/[name].css',
+                allChunks: true
             })
         ]
     }

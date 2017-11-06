@@ -34,15 +34,19 @@ class InviteOverlay extends React.Component {
             <div className={ overlayClass }>
                 {this.props.initiator === SELF_INITIATOR &&
                     <div className="wrapper">
-                        <p>Inviting { this.props.buddy.nick }</p>
-                        <a className="button cancel" onClick={ this.props.abortInvite }>Actually, let's not</a>
+                        <h1>Inviting { this.props.buddy.nick }</h1>
+                        <div className="input-wrapper spaced">
+                            <a className="button cancel" onClick={ this.props.abortInvite }>Cancel</a>
+                        </div>
                     </div>
                 }
                 {this.props.initiator === REMOTE_INITIATOR && 
                     <div className="wrapper">
-                        <p>{ this.props.buddy.nick } wants to play w/ you</p>
-                        <a className="button accept" onClick={ this.props.acceptInvite }>Sure, I guess</a>
-                        <a className="button deny" onClick={ this.props.declineInvite }>Nah, thanks</a>
+                        <h1>{ this.props.buddy.nick } wants to play w/ you</h1>
+                        <div className="input-wrapper spaced">
+                            <a className="button accept" onClick={ this.props.acceptInvite }>Yaas</a>
+                            <a className="button deny" onClick={ this.props.declineInvite }>No, thanks</a>
+                        </div>
                     </div>
                 }
             </div>

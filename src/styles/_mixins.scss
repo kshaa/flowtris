@@ -1,0 +1,12 @@
+// A mathematically "unproven to work always" implementation of a background whoosh animation
+@mixin gloss-underlay($defaultColor, $underlayColor, $speed: $t-regular) {
+    background: linear-gradient(45deg, $defaultColor 0, $defaultColor 50%, $underlayColor 51%, $underlayColor 100%);
+    background-size: 300%;
+    background-position: -1px;
+    transition: $speed;
+
+    &:hover,
+    &:active {
+        background-position: 99%;
+    }
+}

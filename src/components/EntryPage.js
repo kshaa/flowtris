@@ -29,8 +29,8 @@ class Entry extends React.Component {
         return (
             <div className="entry">
                 <header>Flowtris</header>
-                <form onSubmit={this.handleSubmit}>
-                    <input type="text" placeholder="Nickname" value={ this.state.nick }
+                <form className="input-wrapper" onSubmit={this.handleSubmit}>
+                    <input maxLength="25" type="text" placeholder="Nickname" value={ this.state.nick }
                         onChange={ this.handleChange }/>
                     <button type="submit">
                         <span>Start</span>

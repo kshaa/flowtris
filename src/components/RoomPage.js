@@ -32,14 +32,16 @@ class Room extends React.Component {
         return (
             <div className="room">
                 <header>Game room</header>
-                <TetrisField remote={ false } config={ this.props.config } game={ this.props.games.self }/>
-                {Object.keys(this.props.games.remote).map((id) => {
-                    console.log(id, this.props.games.remote[id], this.props.players.filter((player) => player.id == id)[0])
-                    return (
-                        <TetrisField remote={ true } key={ id } game={ this.props.games.remote[id] }
-                            player={ this.props.players.filter((player) => player.id == id)[0] } />
-                    )
-                })}
+                <div className="fields">
+                    <TetrisField remote={ false } config={ this.props.config } game={ this.props.games.self }/>
+                    {Object.keys(this.props.games.remote).map((id) => {
+                        console.log(id, this.props.games.remote[id], this.props.players.filter((player) => player.id == id)[0])
+                        return (
+                            <TetrisField remote={ true } key={ id } game={ this.props.games.remote[id] }
+                                player={ this.props.players.filter((player) => player.id == id)[0] } />
+                        )
+                    })}
+                </div>
             </div>
         );
     }

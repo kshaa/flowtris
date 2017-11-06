@@ -20,6 +20,7 @@ class Lobby extends React.Component {
         return (
             <div className="lobby">
                 <InviteOverlay/>
+                <header>Lobby</header>
                 <Players onSelect={ this.selectPlayer }/>
             </div>
         );

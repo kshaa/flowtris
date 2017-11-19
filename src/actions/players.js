@@ -43,13 +43,8 @@ export const initPlayers = (dispatch, getState) => {
     return new Promise((resolve, reject) => {
         dispatch(subscribeWrtc())
             .then((wrtc) => {
-                console.log(wrtc.getPeers())
-                console.log('tada')
                 wrtc.getPeers().map(checkStatus.bind(null, getState, dispatch))
-                console.log('tada2')
                 wrtc.on('createdPeer', checkStatus.bind(null, getState, dispatch))
-                console.log('tada3')
-                console.log('tada4')
                 resolve('Loaded players.')
             })
             .catch((response) => {
@@ -69,7 +64,6 @@ export const listenPlayers = (type, callback) => (dispatch, getState) => {
     dispatch(subscribeWrtc())
         .then((wrtc) => {
             wrtc.on('channelMessage', (peer, channelLabel, info) => { 
-                console.log(info, peer)
                 if (info.type === type) {
                     callback(peer, info)
                 }
@@ -84,11 +78,9 @@ const playersFlush = (getState, dispatch) => {
     const state = getState(),
           peers = state.wrtc.wrtcInstance.getPeers()
 
-    console.log('flushing player list')
     if (state.wrtc.wrtcHasFinished) {
         // Instance is up, let's clean up boys    
         state.players.map((player) => {
-            console.log(player.peer.pc.iceConnectionState)
             if (peers.find(peer => player.id == peer.id) !== undefined) {
                 dispatch(playerHasLeft(player.peer))
             }

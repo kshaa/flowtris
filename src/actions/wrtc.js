@@ -67,17 +67,13 @@ export const initWrtc = (room, nick) => (dispatch, getState) => {
         const config = state.config
         const wrtc = state.wrtc
         
-        console.log('gonna do smth', wrtc)
         if (wrtc.wrtcHasFinished || wrtc.wrtcIsLoading) {
             // Reload
-            console.log('reloading wrtc')
             Promise.resolve(wrtc.wrtcInstance)
                 .then((payload) => {
                     if (wrtc.currentRoom !== room) {
-                        console.log(room)
                         dispatch(switchRoomWrtc(room))
                     }
-                    console.log(payload)
                     resolve(payload)
                 })
                 .catch((payload) => {
@@ -85,29 +81,21 @@ export const initWrtc = (room, nick) => (dispatch, getState) => {
                 })
         } else {
             // Connect
-            console.log('check')
             dispatch(wrtcIsLoading(true))
             dispatch(wrtcConnectFinished(false, {}))
 
-            console.log('connecting to wrtc')
             wrtcConnect(config, nick, room)
                 .then((instance) => {
                     // Time has passed,
                     // update wrtc subscribers
                     const wrtc = getState().wrtc
-                    console.log(instance)
-                    console.log(wrtc.wrtcSubscribers)
                     wrtc.wrtcSubscribers.map((subscriber) => {
                         subscriber.resolve(instance)
                     })
                     dispatch(wrtcJoinRoom(room))
-                    console.log('check')
                     dispatch(wrtcSubscribersFlush)
-                    console.log('check')
                     dispatch(wrtcIsLoading(false))
-                    console.log('check')
                     dispatch(wrtcConnectFinished(true, instance))
-                    console.log('check')
                     resolve(instance)
                 })
                 .catch((response) => {
@@ -124,14 +112,12 @@ export const initWrtc = (room, nick) => (dispatch, getState) => {
 }
 
 export const subscribeWrtc = () => (dispatch, getState) => {
-    console.log('subscribering')
     return new Promise((resolve, reject) => {
         const state = getState()
         const config = state.config
         const wrtc = state.wrtc
 
         if (wrtc.wrtcHasFinished) {
-            console.log(wrtc.wrtcInstance)
             Promise.resolve(wrtc.wrtcInstance)
                 .then((payload) => {
                     resolve(payload)
@@ -183,20 +169,15 @@ const wrtcConnect = (config, nick = config.nick, room) => {
             reject('WebRTC connection timed out after ' + config.timeout + 'ms.')
         }, config.timeout)
 
-        console.log(wrtcInstance)
         // Join room on working connection
         if (wrtcInstance.connection.connection.io.readyState == 'open') {
-            console.log('connection is ready, joining room ' + room)
             wrtcInstance.joinRoom(room, (error, room) => {
-                console.log('room joined')
                 clearTimeout(timeout)
                 resolve(wrtcInstance)
             })
         } else {
             wrtcInstance.on('connectionReady', () => {
-                console.log('connection is ready, joining room ' + room)
                 wrtcInstance.joinRoom(room, (error, room) => {
-                    console.log('room joined')
                     clearTimeout(timeout)
                     resolve(wrtcInstance)
                 })

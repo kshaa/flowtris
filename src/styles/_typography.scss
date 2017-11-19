@@ -21,3 +21,12 @@ h1, h2, h3, h4, h5, h6 {
     font-size: $f-size-xl;
     color: $clr-white-dr-1;
 }
+
+p {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.emoji {
+    font-size: $f-size-xl;
+}

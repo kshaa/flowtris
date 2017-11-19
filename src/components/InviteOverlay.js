@@ -69,13 +69,10 @@ const populateBuddies = (buddies, players) => {
         buddiesClone[id]['nick'] = player.nick
     })
 
-    console.log(buddies, buddiesClone, players)
-
     return buddiesClone
 }
 
 const getFirstBuddy = (buddies) => {
-    console.log(buddies)
     return Object.values(buddies)[0]
 }
 

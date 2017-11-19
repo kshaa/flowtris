@@ -93,16 +93,13 @@ export const sendInvite = (recipient) => (dispatch, getState) => {
 }
 
 export const listenInvite = (dispatch, getState) => {
-    console.log('listening')
     dispatch(listenPlayers(GAME_INVITE, (peer, { payload, type }) => {
         const state = getState(),
               recipientId = payload.recipientId,
               selfId = state.wrtc.wrtcInstance.connection.connection.id, 
               host = state.players.find((player) => player.id == peer.id).peer
 
-              console.log('maybe got invite', recipientId, selfId, host)
         if (recipientId == selfId) {
-              console.log('totes got invite', recipientId, selfId, host)
             dispatch(receivedInvite(host))
         }
     }))
@@ -117,9 +114,7 @@ export const abortInvite = (dispatch, getState) => {
 }
 
 export const listenAbortInvite = (dispatch, getState) => {
-    console.log('listening')
     dispatch(listenPlayers(GAME_INVITE_ABORT, (peer, { payload, type }) => {
-        console.log('shit, he aborted')
         const state = getState(),
               recipientId = payload.recipientId,
               selfId = state.wrtc.wrtcInstance.connection.connection.id, 
@@ -153,7 +148,6 @@ export const listenAcceptInvite = (dispatch, getState) => {
               host = state.players.find((player) => player.id == peer.id).peer
 
         if (recipientId == selfId) {
-             console.log('parties agreed')
              dispatch(redirectGame(host.id))
         }
     }))

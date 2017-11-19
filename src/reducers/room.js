@@ -11,19 +11,22 @@ import {
 } from '../actions/lobby'
 
 import {
-    GAME_FIELD_UPDATED
+    GAME_FIELD_UPDATED,
+    GAME_ENGINE_UPDATED
 } from '../actions/game'
 
 const createPlayer = (
     previousState = {}, // So we don't accidentally check keys on 'undefined'
     started = previousState.started ? previousState.started : false,
     piece = previousState.piece ? previousState.piece : [],
-    field = previousState.field ? previousState.field : []
+    field = previousState.field ? previousState.field : [],
+    engine = previousState.engine ? previousState.engine : {}
 ) => {
     return {
         started,
         piece,
-        field
+        field,
+        engine
     }
 }
 
@@ -42,7 +45,6 @@ export function roomInitiator(state = NO_INITIATOR, action) {
 }
 
 export function selfGame(state = {}, action) {
-    console.log('action being reduced', action.type)
     switch (action.type) {
         case LOBBY_SENT_INVITE:
         case LOBBY_RECEIVED_INVITE:
@@ -54,6 +56,10 @@ export function selfGame(state = {}, action) {
         case GAME_FIELD_UPDATED:
             if (action.initiator == SELF_INITIATOR) {
                 return createPlayer(state, undefined, undefined, action.data)
+            }
+        case GAME_ENGINE_UPDATED:
+            if (action.initiator == SELF_INITIATOR) {
+                return createPlayer(state, undefined, undefined, undefined, action.data)
             }
         default:
             return state

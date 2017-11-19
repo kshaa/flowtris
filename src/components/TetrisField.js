@@ -1,17 +1,43 @@
 import React from 'react'
 import classNames from 'classnames'
+import KeyHandler, {KEYDOWN} from 'react-key-handler'
+import { connect } from 'react-redux'
+import {
+    moveLeft,
+    moveRight,
+    moveClockwise,
+    moveDown,
+    moveDrop
+} from '../actions/game'
 
-export default class TetrisField extends React.Component {
-    componentDidMount() {
-        console.log('tada', this.props)
-    }
-
+class TetrisField extends React.Component {
     cellClass(cellType) {
         return classNames({
             cell: true,
             [cellType]: true,
             x: cellType === 0
         })
+    }
+
+    bindKeyboard() {
+        return (
+            <div className="keyboard-bind">
+                {/* WASD */}
+                <KeyHandler keyValue="a" onKeyHandle={this.props.moveLeft} keyEventName={KEYDOWN} />
+                <KeyHandler keyValue="d" onKeyHandle={this.props.moveRight} keyEventName={KEYDOWN} />
+                <KeyHandler keyValue="s" onKeyHandle={this.props.moveDown} keyEventName={KEYDOWN} />
+                <KeyHandler keyValue="w" onKeyHandle={this.props.moveClockwise} keyEventName={KEYDOWN} />
+
+                {/* Arrows */}
+                <KeyHandler keyValue="ArrowLeft" onKeyHandle={this.props.moveLeft} keyEventName={KEYDOWN} />
+                <KeyHandler keyValue="ArrowRight" onKeyHandle={this.props.moveRight} keyEventName={KEYDOWN} />
+                <KeyHandler keyValue="ArrowDown" onKeyHandle={this.props.moveDown} keyEventName={KEYDOWN} />
+                <KeyHandler keyValue="ArrowUp" onKeyHandle={this.props.moveClockwise} keyEventName={KEYDOWN} />
+
+                {/* Space Drop */}
+                <KeyHandler keyValue=" " onKeyHandle={this.props.moveDrop} keyEventName={KEYDOWN} />
+            </div>
+        )
     }
 
     render() {
@@ -29,6 +55,9 @@ export default class TetrisField extends React.Component {
 
         return (
             <div className={ boardClass }>
+                {!this.props.remote &&
+                    this.bindKeyboard()
+                }
                 <div className="nickname">
                     {!loaded &&
                         <p>...</p>
@@ -66,3 +95,14 @@ export default class TetrisField extends React.Component {
         )
     }
 }
+
+export default connect(
+    state => ({}),
+    dispatch => ({
+        moveLeft() { return dispatch(moveLeft) },
+        moveRight() { return dispatch(moveRight) },
+        moveClockwise() { return dispatch(moveClockwise) },
+        moveDown() { return dispatch(moveDown) },
+        moveDrop() { return dispatch(moveDrop) }
+    })
+)(TetrisField)

@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { initWrtc } from '../actions/wrtc'
 import { initPlayers } from '../actions/players'
 import { startRoom } from '../actions/game'
-import { SELF_INITIATOR } from '../actions/lobby'
+import { Link } from 'react-router';
 
 export const room = 'room'
 
@@ -16,16 +16,26 @@ class Room extends React.Component {
     }
 
     componentDidMount() {
-        console.log('switching room')
         this.props.initWrtc(room + this.roomId)
         this.props.initPlayers()
         const self = this
         setTimeout(
-                function() {
-                
-        self.props.startRoom()
-                },
-                2000)
+        function() {
+            self.props.startRoom()
+        }, 2000)
+    }
+
+    failMessage() {
+        return (
+            <div className="sorry-message center">
+                <p>This place seems real empty!</p>
+                <p>The developer was probably too lazy to create a refreshable game connection.</p>
+                <span className="emoji">😒</span>
+                <Link to="/lobby">
+                    <button>Back to lobby</button>
+                </Link>
+            </div>
+        )
     }
 
     render() {
@@ -33,9 +43,13 @@ class Room extends React.Component {
             <div className="room">
                 <header>Game room</header>
                 <div className="fields">
-                    <TetrisField remote={ false } config={ this.props.config } game={ this.props.games.self }/>
+                    {Object.keys(this.props.games.remote).length === 0 &&
+                        this.failMessage()
+                    }
+                    {Object.keys(this.props.games.remote).length !== 0 &&
+                        <TetrisField remote={ false } config={ this.props.config } game={ this.props.games.self }/>
+                    }
                     {Object.keys(this.props.games.remote).map((id) => {
-                        console.log(id, this.props.games.remote[id], this.props.players.filter((player) => player.id == id)[0])
                         return (
                             <TetrisField remote={ true } key={ id } game={ this.props.games.remote[id] }
                                 player={ this.props.players.filter((player) => player.id == id)[0] } />

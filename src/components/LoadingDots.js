@@ -21,7 +21,6 @@ export default class LoadingDots extends React.Component {
     }
 
     tick() {
-        console.log(this.state)
         this.setState({
             tick: this.state.tick == 3 ? 0 : this.state.tick++
         })

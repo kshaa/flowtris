@@ -5,6 +5,7 @@ import { initWrtc } from '../actions/wrtc'
 import { initPlayers } from '../actions/players'
 import { startRoom } from '../actions/game'
 import { Link } from 'react-router';
+import classNames from 'classnames'
 
 export const room = 'room'
 
@@ -39,6 +40,11 @@ class Room extends React.Component {
     }
 
     render() {
+        const returnButtonClasses = classNames({
+            hidden: !this.props.roomEnded,
+            return: true
+        })
+
         return (
             <div className="room">
                 <header>Game room</header>
@@ -56,6 +62,9 @@ class Room extends React.Component {
                         )
                     })}
                 </div>
+                <Link className={ returnButtonClasses } to="/lobby">
+                    <button className="button">Back to lobby</button>
+                </Link>
             </div>
         );
     }
@@ -65,7 +74,8 @@ export default connect(
     state => ({
         config: state.config,
         players: state.players,
-        games: state.room.roomGames
+        games: state.room.roomGames,
+        roomEnded: state.room.roomEnded
     }),
     dispatch => ({
         initWrtc(room) { return dispatch(initWrtc(room)) },

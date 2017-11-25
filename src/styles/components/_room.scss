@@ -3,6 +3,24 @@
         margin: 0.5em;
     }
 
+    .return {
+        margin-top: 20px;
+        display: block;
+        min-width: 100%;
+        transition-duration: $t-regular;
+        opacity: 1;
+        text-align: center;
+
+        &.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .button {
+            padding: 15px 25px;
+        }
+    }
+
     .sorry-message {
         display: flex;
         flex-direction: column;
@@ -21,19 +39,6 @@
         align-items: stretch;
     }
 
-    .board {
-        border: 4px solid $clr-black;
-        background: $clr-black-lg-1;
-        min-width: calc(15em + 5vmin);
-
-        &.loaded {
-            .field {
-                max-height: 100em;
-                opacity: 1;
-            }
-        }
-    }
-
     .nickname {
         padding: 10px;
         background: $clr-black-lg-1;
@@ -49,16 +54,29 @@
         left: 0;
         right: 0;
         color: $clr-white-dr-1;
-        background: $clr-black-op-3;
+        background: $clr-black-op-5;
         text-align: center;
         line-height: 3em;
     }
 
+    .board {
+        border: 4px solid $clr-black;
+        background: $clr-black-lg-1;
+        min-width: calc(15em + 5vmin);
+
+        &.loaded {
+            .field {
+                max-height: 38em;
+                opacity: 1;
+            }
+        }
+    }
+
     .field {
         overflow: hidden;
-        transition-duration: $t-regular;
-        min-height: 22em;
-        max-height: 22em;
+        transition-duration: $t-slow;
+        min-height: 15em;
+        max-height: 15em;
         opacity: 0;
         flex-grow: 1;
 

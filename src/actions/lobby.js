@@ -64,10 +64,10 @@ export const lostInvite = () => {
     }
 }
 
-export const acceptedInvite = () => {
+export const acceptedInvite = (initiator = REMOTE_INITIATOR) => {
     return {
         type: LOBBY_ACCEPTED_INVITE,
-        initiator: REMOTE_INITIATOR
+        initiator
     }
 }
 
@@ -81,6 +81,24 @@ export const declinedInvite = () => {
 /**
  * Thunk action creators
  */
+let localGameStartResolvers = []
+const startGamePromise = (dispatch) => {
+    return new Promise((resolve) => {
+        const lateResolve = () => {
+            // On game start, wait a bit
+            // And resolve this promise, which will trigger listener disabling
+            setTimeout(() => {
+                resolve()
+            }, 1000)
+
+            localGameStartResolvers = []
+        }
+
+        localGameStartResolvers.push(resolve)
+        dispatch(listenPlayers(LOBBY_ACCEPTED_INVITE, lateResolve))
+    })
+}
+
 export const redirectGame = (room) => (dispatch, getState) => {
     browserHistory.push('/' + gameRoomLabel + '/' + room)
 }
@@ -102,7 +120,7 @@ export const listenInvite = (dispatch, getState) => {
         if (recipientId == selfId) {
             dispatch(receivedInvite(host))
         }
-    }))
+    }, startGamePromise(dispatch)))
 }
 
 export const abortInvite = (dispatch, getState) => {
@@ -123,16 +141,26 @@ export const listenAbortInvite = (dispatch, getState) => {
         if (recipientId == selfId) {
             dispatch(lostInvite())
         }
-    }))
+    }, startGamePromise(dispatch)))
 }
 
 export const acceptInvite = (dispatch, getState) => {
     const recipientId = Object.keys(getState().room.roomGames.remote)[0],
           host = getState().wrtc.wrtcInstance.connection.connection
-    dispatch(acceptedInvite())
+    dispatch(acceptedInvite(SELF_INITIATOR))
     dispatch(messagePlayers(GAME_ACCEPT, {
         recipientId
     }))
+
+    // Resolve game start to stop listeners
+    if (localGameStartResolvers) {
+        localGameStartResolvers.map((resolver) => {
+            resolver()
+        })
+
+        localGameStartResolvers = []
+    }
+
     // Send acceptance, wait and go to room
     // this seems like a hacky fix
     setTimeout(() => {
@@ -148,9 +176,10 @@ export const listenAcceptInvite = (dispatch, getState) => {
               host = state.players.find((player) => player.id == peer.id).peer
 
         if (recipientId == selfId) {
-             dispatch(redirectGame(host.id))
+            dispatch(acceptedInvite())
+            dispatch(redirectGame(host.id))
         }
-    }))
+    }, startGamePromise(dispatch)))
 }
 
 export const declineInvite = (dispatch, getState) => {
@@ -171,5 +200,5 @@ export const listenDeclineInvite = (dispatch, getState) => {
         if (recipientId == selfId) {
             dispatch(lostInvite())
         }
-    }))
+    }, startGamePromise(dispatch)))
 }

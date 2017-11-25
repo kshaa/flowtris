@@ -42,10 +42,13 @@ class TetrisField extends React.Component {
 
     render() {
         const loaded = !this.props.remote || (this.props.player && this.props.player.loaded),
-              started = this.props.game.started,
+              nick = this.props.remote ? (this.props.player ? this.props.player.nick : 'This dude') :
+                     this.props.config ? this.props.config.nick : 'You',
+              lost = this.props.game.lost,
+              won = this.props.game.won, // Add winning ;D
               remote = this.props.remote,
               game = this.props.game,
-              empty = JSON.stringify(game) === JSON.stringify([]),
+              empty = JSON.stringify(game.field) === JSON.stringify([]),
               boardClass = classNames({
                   board: true,
                   remote: !this.props.remote,
@@ -63,20 +66,32 @@ class TetrisField extends React.Component {
                         <p>...</p>
                     }
                     {loaded && remote &&
-                        <p>{ this.props.player.nick }</p>
+                        <p>{ nick }</p>
                     }
                     {loaded && !remote &&
-                        <p>{ this.props.config.nick }</p>
+                        <p>{ nick+ " (You)"}</p>
                     }
                 </div>
                 <div className="game">
                     <div className="status">
-                        {!loaded &&
+                        {!loaded && !lost && !won &&
                             <p>{ "Waiting for player to join" }</p>
+                        }
+                        {remote && lost &&
+                        <p>{ nick + " lost" }</p>
+                        }
+                        {remote && won &&
+                        <p>{ nick + " won" }</p>
+                        }
+                        {!remote && won &&
+                        <p>{ "You won! 😊" }</p>
+                        }
+                        {!remote && lost &&
+                        <p>{ "You lost 😞" }</p>
                         }
                     </div>
                     <div className="field">
-                        {loaded && game && /* started && */ game.field.map((row, index) => {
+                        {loaded && game && game.field.map((row, index) => {
                             return (
                                 <div className="row" key={ index }>
                                     {row.map((cellType, index) => {

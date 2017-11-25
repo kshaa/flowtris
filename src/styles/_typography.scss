@@ -6,6 +6,7 @@ $font-raleway: 'Raleway', sans-serif;
 
 // Font sizes
 $f-size: calc(0.99em + 0.05vmin);
+$f-size-l: calc(1.2em + 5vmin);
 $f-size-xl: calc(2em + 5vmin);
 
 // Generic font settings
@@ -15,8 +16,13 @@ $f-size-xl: calc(2em + 5vmin);
     color: $clr-white-dr-1;
 }
 
-header,
-h1, h2, h3, h4, h5, h6 {
+h2, h3, h4, h5, h6 {
+    font-family: $font-poiret;
+    font-size: $f-size-l;
+    color: $clr-white-dr-1;
+}
+
+header, h1 {
     font-family: $font-poiret;
     font-size: $f-size-xl;
     color: $clr-white-dr-1;

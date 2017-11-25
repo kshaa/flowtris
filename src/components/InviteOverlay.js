@@ -25,7 +25,7 @@ class InviteOverlay extends React.Component {
     render() {
         const overlayClass = classNames({
             overlay: true,
-            hidden: this.props.initiator === NO_INITIATOR,
+            hidden: this.props.initiator === NO_INITIATOR || this.props.inviteDestroyed,
             remote: this.props.initiator === REMOTE_INITIATOR,
             self: this.props.initiator === SELF_INITIATOR
         })
@@ -34,7 +34,7 @@ class InviteOverlay extends React.Component {
             <div className={ overlayClass }>
                 {this.props.initiator === SELF_INITIATOR &&
                     <div className="wrapper">
-                        <h1>Inviting { this.props.buddy.nick }</h1>
+                        <h2 className="invitation">Inviting { this.props.buddy.nick }</h2>
                         <div className="input-wrapper spaced">
                             <a className="button cancel" onClick={ this.props.abortInvite }>Cancel</a>
                         </div>
@@ -42,7 +42,7 @@ class InviteOverlay extends React.Component {
                 }
                 {this.props.initiator === REMOTE_INITIATOR && 
                     <div className="wrapper">
-                        <h1>{ this.props.buddy.nick } wants to play w/ you</h1>
+                        <h2 className="invitation">{ this.props.buddy.nick } wants to play w/ you</h2>
                         <div className="input-wrapper spaced">
                             <a className="button accept" onClick={ this.props.acceptInvite }>Yaas</a>
                             <a className="button deny" onClick={ this.props.declineInvite }>No, thanks</a>
@@ -65,20 +65,27 @@ const populateBuddies = (buddies, players) => {
     const buddiesClone = {} // Mustn't modify state
     Object.keys(buddies).map((id) => {
         const player = players.filter((player) => player.id == id)[0]
-        buddiesClone[id] = buddies[id]
-        buddiesClone[id]['nick'] = player.nick
+        if (player && player.nick) {
+            buddiesClone[id] = buddies[id]
+            buddiesClone[id]['nick'] = player.nick
+        }
     })
 
     return buddiesClone
 }
 
 const getFirstBuddy = (buddies) => {
-    return Object.values(buddies)[0]
+    if (Object.keys(buddies).length > 0) {
+        return Object.values(buddies)[0]
+    } else {
+        return {}
+    }
 }
 
 export default connect(
     state => ({
         initiator: state.room.roomInitiator,
+        inviteDestroyed: state.room.inviteDestroyed,
         buddy: getFirstBuddy(populateBuddies(state.room.roomGames.remote, state.players))
     }),
     dispatch => ({

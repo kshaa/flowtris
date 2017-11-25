@@ -60,14 +60,27 @@ export const messagePlayers = (type, payload = {}) => (dispatch, getState) => {
         })
 }
 
-export const listenPlayers = (type, callback) => (dispatch, getState) => {
+export const listenPlayers = (type, callback, killPromise) => (dispatch, getState) => {
     dispatch(subscribeWrtc())
         .then((wrtc) => {
-            wrtc.on('channelMessage', (peer, channelLabel, info) => { 
-                if (info.type === type) {
+            // Generate listener for callback trigger
+            let isDead = false // Actual wrtc.off works odd
+            const listener = (peer, channelLabel, info) => {
+                if (info.type === type && !isDead) {
                     callback(peer, info)
                 }
-            })
+            }
+
+            wrtc.on('channelMessage', listener)
+
+            // If kill promise exists and ever resolves
+            // Disable listener
+            if (typeof (killPromise) !== 'undefined') {
+                Promise.resolve(killPromise)
+                    .then(() => {
+                        isDead = true
+                    })
+            }
         })
 }
 

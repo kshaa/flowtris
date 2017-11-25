@@ -135,24 +135,30 @@ export const switchRoomWrtc = (room) => (dispatch, getState) => {
     const state = getState(),
           wrtc = state.wrtc
 
-    dispatch(leaveRoomWrtc)
-    dispatch(joinRoomWrtc(room))
+    if (wrtc.wrtcInstance) {
+        dispatch(leaveRoomWrtc)
+        dispatch(joinRoomWrtc(room))
+    }
 }
 
 export const leaveRoomWrtc = (dispatch, getState) => {
     const state = getState(),
           wrtc = state.wrtc
 
-    wrtc.wrtcInstance.leaveRoom()
-    dispatch(wrtcLeaveRoom)
+    if (wrtc.wrtcInstance.leaveRoom) {
+        wrtc.wrtcInstance.leaveRoom()
+        dispatch(wrtcLeaveRoom)
+    }
 }
 
 export const joinRoomWrtc = (room) => (dispatch, getState) => {
     const state = getState(),
           wrtc = state.wrtc
 
-    wrtc.wrtcInstance.joinRoom(room)
-    dispatch(wrtcJoinRoom(room))
+    if (wrtc.wrtcInstance.joinRoom) {
+        wrtc.wrtcInstance.joinRoom(room)
+        dispatch(wrtcJoinRoom(room))
+    }
 }
 
 const wrtcConnect = (config, nick = config.nick, room) => {

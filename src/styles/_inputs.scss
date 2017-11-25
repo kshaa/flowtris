@@ -37,6 +37,7 @@ input[type="text"] {
 button,
 .button {
     @include gloss-underlay($clr-white-dr-1, $clr-black);
+    display: inline-block;
     padding: 10px 15px;
     border: 1px solid $clr-black-lg-1;
     cursor: pointer;

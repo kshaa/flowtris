@@ -1,8 +1,7 @@
 {
   "name": "flowtris",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A handsome HTML5, WebRTC tetris remake",
-  "main": "www/index.html",
   "author": "Krišjānis Veinbahs",
   "repository": {
     "type": "git",
@@ -10,8 +9,45 @@
   },
   "license": "MIT",
   "dependencies": {
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "classnames": "^2.2.5",
+    "copy-webpack-plugin": "^4.0.1",
+    "css-loader": "^0.28.7",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "json-loader": "^0.5.7",
     "keyboardjs": "^2.3.3",
-    "peerjs": "^0.3.14",
-    "requirejs": "^2.3.3"
+    "koa": "^2.3.0",
+    "koa-router": "^7.2.1",
+    "koa-send": "^4.1.0",
+    "koa-static": "^4.0.1",
+    "node-sass": "^4.6.0",
+    "react": "^15.6.1",
+    "react-dom": "^15.3.2",
+    "react-key-handler": "^1.0.1",
+    "react-keydown": "^1.9.5",
+    "react-redux": "^5.0.6",
+    "react-router": "^2.6.1",
+    "redux": "^3.7.2",
+    "redux-action-buffer": "^1.1.0",
+    "redux-logger": "^3.0.6",
+    "redux-persist": "^4.9.1",
+    "redux-thunk": "^2.2.0",
+    "sass-loader": "^6.0.6",
+    "simplewebrtc": "^3.0.1",
+    "style-loader": "^0.19.0",
+    "tetris-engine": "github:kshaa/tetris-engine#0.1.9",
+    "webpack": "^3.6.0"
+  },
+  "scripts": {
+    "build": "node_modules/.bin/webpack -p",
+    "build-watch": "node_modules/.bin/webpack -p --watch",
+    "build-dev": "node_modules/.bin/webpack -d",
+    "build-dev-watch": "node_modules/.bin/webpack -d --watch"
+  },
+  "devDependencies": {
+    "redux-devtools": "^3.4.0"
   }
 }

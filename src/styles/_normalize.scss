@@ -1,0 +1,22 @@
+// Define CSS rules which differ across browsers
+// in the way I'd like them to be
+* {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    transition-timing-function: ease-in-out;
+}
+
+*:focus {
+    outline: $clr-white-op-1 dotted 1px;
+}
+
+button {
+    border-radius: 0;
+}
+
+a {
+    color: $clr-white;
+    text-decoration: none;
+}
+

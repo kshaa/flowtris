@@ -1,0 +1,43 @@
+/**
+ * Global color definitions
+ */
+// Base colors
+$clr-transparent: transparent;
+$clr-black: #000000;
+$clr-white: #FFFFFF;
+$clr-melon-jolly: #E84A5F;
+$clr-coup-de-grace: #2A2A3C;
+
+// Tetris colors
+$clr-yellow: #fff900;
+$clr-red: #ff0500;
+$clr-purple: #aa00aa;
+$clr-cyan: #009faa;
+$clr-blue: #1600aa;
+$clr-green: #05aa00;
+$clr-orange: #ff8b00;
+
+// Color mutations
+// Naming consistency not guaranteed!
+$clr-black-lg-1: lighten($clr-black, 10);
+$clr-black-lg-2: lighten($clr-black, 20);
+$clr-black-lg-25: lighten($clr-black, 25);
+$clr-black-op-4: transparentize($clr-black, 0.6);
+$clr-black-op-5: transparentize($clr-black, 0.5);
+$clr-black-op-8: transparentize($clr-black, 0.2);
+$clr-white-dr-1: darken($clr-white, 10);
+$clr-white-dr-2: darken($clr-white, 20);
+$clr-white-dr-3: darken($clr-white, 30);
+$clr-white-op-05: transparentize($clr-white, 0.95);
+$clr-white-op-1: transparentize($clr-white, 0.9);
+$clr-white-op-5: transparentize($clr-white, 0.5);
+$clr-melon-jolly-op-0: transparentize($clr-melon-jolly, 1);
+$clr-melon-jolly-op-3: transparentize($clr-melon-jolly, 0.7);
+$clr-melon-jolly-op-7: transparentize($clr-melon-jolly, 0.3);
+
+/**
+ * Timings for animations
+ */
+$t-quick: 0.15s;
+$t-regular: 0.3s;
+$t-slow: 0.5s;

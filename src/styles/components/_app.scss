@@ -1,0 +1,21 @@
+html,
+body,
+#main,
+#root,
+.flowtris {
+    height: 100%;
+}
+
+html,
+body {
+    background: $clr-coup-de-grace;
+    overflow-x: hidden;
+}
+
+.flowtris {
+    display: flex;
+
+    > * {
+        min-width: 100%;
+    }
+}

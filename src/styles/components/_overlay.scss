@@ -1,0 +1,30 @@
+.overlay {
+    background: $clr-black-op-8;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    transition-duration: $t-quick;
+    opacity: 1;
+    visibility: visible;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    &.hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .invitation {
+        margin: 0 0.5em 1em;
+    }
+
+    .wrapper {
+        text-align: center;
+    }
+}

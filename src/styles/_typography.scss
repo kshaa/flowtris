@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css?family=Amatic+SC|Poiret+One|Raleway');
+
+// Font families
+$font-poiret: 'Poiret One', cursive;
+$font-raleway: 'Raleway', sans-serif;
+
+// Font sizes
+$f-size: calc(0.99em + 0.05vmin);
+$f-size-l: calc(1.2em + 5vmin);
+$f-size-xl: calc(2em + 5vmin);
+
+// Generic font settings
+* {
+    font-family: $font-raleway;
+    font-size: $f-size;
+    color: $clr-white-dr-1;
+}
+
+h2, h3, h4, h5, h6 {
+    font-family: $font-poiret;
+    font-size: $f-size-l;
+    color: $clr-white-dr-1;
+}
+
+header, h1 {
+    font-family: $font-poiret;
+    font-size: $f-size-xl;
+    color: $clr-white-dr-1;
+}
+
+p {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.emoji {
+    font-size: $f-size-xl;
+}

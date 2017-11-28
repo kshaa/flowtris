@@ -1,0 +1,55 @@
+.input-wrapper {
+    white-space: nowrap;
+
+    &.spaced {
+        * {
+            margin-right: 0.5em;
+        }
+    }
+}
+
+input,
+.input,
+button,
+.button {
+    &, span, p {
+        transition: $t-regular;
+        color: $clr-black-lg-1;
+    }
+
+    box-shadow: 0 0 30px $clr-transparent;
+
+    &.disabled:active {
+        border-color: $clr-melon-jolly;
+        box-shadow: 0 0 30px $clr-melon-jolly;
+    }
+}
+
+input[type="text"] {
+    @include gloss-underlay($clr-white-dr-3, $clr-white);
+    padding: 10px;
+
+    + button {
+        border: 0;
+    }
+}
+
+button,
+.button {
+    @include gloss-underlay($clr-white-dr-1, $clr-black);
+    display: inline-block;
+    padding: 10px 15px;
+    border: 1px solid $clr-black-lg-1;
+    cursor: pointer;
+    color: $clr-black-lg-1;
+    text-align: center;
+
+    &:hover,
+    &:active {
+        &, span, p {
+            color: $clr-white-dr-1;
+        }
+    }
+
+    &.disabled {}
+}

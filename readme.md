@@ -13,5 +13,9 @@ Multiplayer WebRTC Tetris with React UI. Still has a few bugs and anti-patterns,
 # Compiling
 ```
     npm install
-    npm run build
+    # Compile development mode
+    npm run build-dev
+    # Compile production mode
+    # (Minification doesn't work, yet to be fixed)
+    npm run build-dev
 ```

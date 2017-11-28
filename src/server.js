@@ -5,7 +5,7 @@ import send from 'koa-send'
 const port = process.env.PORT || 3000
 const app = new Koa()
 
-    // Static files
+// Static files
 app.use(serve('public'))
 
 // Pages

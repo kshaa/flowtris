@@ -12,10 +12,12 @@ import {
 
 class TetrisField extends React.Component {
     cellClass(cellType) {
+        if (cellType === 0) {
+            cellType = "empty"
+        }
         return classNames({
             cell: true,
-            [cellType]: true,
-            x: cellType === 0
+            [cellType]: true
         })
     }
 

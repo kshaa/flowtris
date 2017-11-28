@@ -12,11 +12,9 @@ import TetrisEngine from 'tetris-engine/src/engine.es6'
  */
 export const GAME_STARTED               = 'GAME_STARTED'
 export const GAME_STOPPED               = 'GAME_STOPPED'
-export const GAME_PIECE_UPDATED         = 'GAME_PIECE_UPDATED'
 export const GAME_ENGINE_UPDATED        = 'GAME_ENGINE_UPDATED'
 export const GAME_FIELD_UPDATED         = 'GAME_FIELD_UPDATED'
-export const GAME_LINE_ADDED            = 'GAME_LINE_ADDED'    // No. - above which grid line will be added
-export const GAME_LINE_DROPPED          = 'GAME_LINE_DROPPED'  // No. - which field line will be deleted
+export const GAME_LINES_DROPPED         = 'GAME_LINES_DROPPED'
 
 /**
  *  A horrible promise, which will spaghettify and break everything
@@ -177,12 +175,19 @@ const bindEngineToState = (dispatch, getState, engine) => {
     engine.hook.before((engine) => {
         const state = getState(),
               game = state.room.roomGames.self, // Old game state
-              field = engine.field()
+              field = engine.field(),
+              linesDropped = engine.linesDropped()
 
         // Update game field
         // Transform to string, because it's shorter & consise than .every
         if (field.toString() != game.field.toString()) {
             dispatch(changeGameData(GAME_FIELD_UPDATED, field))
+        }
+
+        // Update game field
+        // Transform to string, because it's shorter & consise than .every
+        if (linesDropped > 0) {
+            dispatch(changeGameData(GAME_LINES_DROPPED, linesDropped))
         }
     })
 
@@ -243,6 +248,14 @@ const bindRemoteEnginesToState = (dispatch, getState) => {
             }
         }
     }, gameEndPromise(dispatch)))
+
+    dispatch(listenPlayers(GAME_LINES_DROPPED, (peer, { payload, type }) => {
+        // Add lines to field
+        const state = getState(),
+              game = state.room.roomGames.self
+
+        game.engine.addLines(payload.data - 1)
+    }, gameEndPromise(dispatch)))
 }
 
 const startGames = (engine) => (dispatch, getState) => {
@@ -277,7 +290,6 @@ export const startRoom = (dispatch, getState) => {
 export const listenStartGames = (dispatch, getState) => {
     dispatch(listenPlayers(GAME_STARTED, (peer, { payload, type }) => {
         // I could write a check here to see if game host(!) initiated start
-        console.log('heard you got a game going, starting engine, yo')
         const engine = new TetrisEngine(payload.seed)
         dispatch(startGames(engine))
     }, gameEndPromise(dispatch)))
@@ -303,10 +315,11 @@ const waitForPlayers = (dispatch, getState) => {
             playersReady = Object.keys(remoteGames).length == players.filter(player => player.loaded).length
 
         if (playersReady) {
-            const engine = new TetrisEngine()
-            dispatch(messagePlayers(GAME_STARTED, { seed: engine.seed() }))
-            dispatch(startGames(engine))
-
+            setTimeout(() => {
+                const engine = new TetrisEngine()
+                dispatch(messagePlayers(GAME_STARTED, { seed: engine.seed() }))
+                dispatch(startGames(engine))
+            }, 300)
             clearInterval(checkerId);
             clearTimeout(timeoutId);
         }

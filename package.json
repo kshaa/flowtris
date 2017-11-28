@@ -38,7 +38,7 @@
     "sass-loader": "^6.0.6",
     "simplewebrtc": "^3.0.1",
     "style-loader": "^0.19.0",
-    "tetris-engine": "github:kshaa/tetris-engine#0.1.7",
+    "tetris-engine": "github:kshaa/tetris-engine#0.1.9",
     "webpack": "^3.6.0"
   },
   "scripts": {

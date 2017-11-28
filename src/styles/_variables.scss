@@ -6,7 +6,7 @@ $clr-transparent: transparent;
 $clr-black: #000000;
 $clr-white: #FFFFFF;
 $clr-melon-jolly: #E84A5F;
-$clr-coup-de-grace: #2A363B;
+$clr-coup-de-grace: #2A2A3C;
 
 // Tetris colors
 $clr-yellow: #fff900;
@@ -21,6 +21,7 @@ $clr-orange: #ff8b00;
 // Naming consistency not guaranteed!
 $clr-black-lg-1: lighten($clr-black, 10);
 $clr-black-lg-2: lighten($clr-black, 20);
+$clr-black-lg-25: lighten($clr-black, 25);
 $clr-black-op-4: transparentize($clr-black, 0.6);
 $clr-black-op-5: transparentize($clr-black, 0.5);
 $clr-black-op-8: transparentize($clr-black, 0.2);
